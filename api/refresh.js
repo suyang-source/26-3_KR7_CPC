@@ -58,12 +58,14 @@ function buildData(rows) {
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     if (!r || r.length === 0) continue;
+
+    const isTotalRow = r[0] === '총합계' || r[2] === '총 합산' || r[5] === '총 합산';
     const hasAm = r[0] !== undefined && r[0] !== '';
     const hasHospitalId = r[1] !== undefined && r[1] !== '';
-    const isNewBlock = hasAm || hasHospitalId;
+    const isNewBlock = hasAm || hasHospitalId || isTotalRow;
 
     if (isNewBlock) {
-      if (r[0] === '총합계') {
+      if (isTotalRow) {
         inTotal = true; curKey = null;
       } else {
         inTotal = false;
