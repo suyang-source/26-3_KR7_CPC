@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>26-3차 CPC 성과 트래커 | 강남언니</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#0f1417;
+    --panel:#161d22;
+    --panel-2:#1c252b;
+    --line:#2a343a;
+    --line-soft:#232c32;
+    --text:#e8edf0;
+    --text-dim:#8fa0a8;
+    --text-faint:#5c6b72;
+    --teal:#3ddcc0;
+    --teal-dim:#1d4a44;
+    --amber:#f0a13c;
+    --amber-dim:#4a3418;
+    --red:#e8604f;
+    --green:#5fd68a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #17222580, transparent),
+      var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans KR', -apple-system, sans-serif;
+    min-height:100vh;
+  }
+  .num, .mono{font-family:'IBM Plex Mono','IBM Plex Sans KR',monospace;}
+
+  header{
+    padding:28px clamp(16px,4vw,48px) 20px;
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:14px;
+  }
+  .brand-eyebrow{
+    font-size:11px; letter-spacing:.14em; color:var(--teal); font-weight:600; text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  h1{margin:0; font-size:22px; font-weight:700; letter-spacing:-.01em;}
+  .sub{color:var(--text-dim); font-size:12.5px; margin-top:4px;}
+  .period-badge{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--text-dim);
+    border:1px solid var(--line); border-radius:999px; padding:6px 14px;
+    background:var(--panel);
+  }
+
+  main{padding:22px clamp(16px,4vw,48px) 60px; max-width:1720px; margin:0 auto;}
+
+  /* KPI row */
+  .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:22px;}
+  .kpi{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 18px; position:relative; overflow:hidden;
+  }
+  .kpi::before{
+    content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  }
+  .kpi.impressions::before{background:var(--teal);}
+  .kpi.revenue::before{background:var(--amber);}
+  .kpi.count::before{background:var(--text-faint);}
+  .kpi-label{font-size:11.5px; color:var(--text-dim); margin-bottom:8px;}
+  .kpi-value{font-size:24px; font-weight:600; font-family:'IBM Plex Mono',monospace; letter-spacing:-.01em;}
+  .kpi-delta{font-size:12px; margin-top:6px; font-family:'IBM Plex Mono',monospace;}
+  .up{color:var(--green);} .down{color:var(--red);} .flat{color:var(--text-faint);}
+
+  /* Section title */
+  .section-title{
+    display:flex; align-items:center; gap:10px; margin:30px 0 12px;
+  }
+  .section-title h2{font-size:15px; margin:0; font-weight:700;}
+  .section-title .section-sub{font-size:12px; color:var(--text-faint);}
+
+  /* Chart panel */
+  .chart-panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px 20px;
+  }
+  .chart-toolbar{
+    display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:14px;
+  }
+  .picker-wrap{position:relative; flex:1; min-width:220px;}
+  .picker-wrap input{width:100%;}
+  .picker-dropdown{
+    position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:10;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
+    max-height:240px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,.4);
+  }
+  .picker-item{
+    padding:8px 12px; font-size:12.5px; cursor:pointer; display:flex; justify-content:space-between; gap:8px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .picker-item:last-child{border-bottom:none;}
+  .picker-item:hover{background:#26313a;}
+  .picker-item .pi-am{color:var(--text-faint); font-size:11px;}
+  .metric-toggle{display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .metric-toggle button{
+    border:none; background:var(--panel-2); color:var(--text-dim); padding:8px 16px;
+    font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit;
+  }
+  .metric-toggle button.active.imp{background:var(--teal-dim); color:var(--teal);}
+  .metric-toggle button.active.rev{background:var(--amber-dim); color:var(--amber);}
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; min-height:30px;}
+  .chip{
+    display:flex; align-items:center; gap:7px; padding:5px 8px 5px 10px; border-radius:999px;
+    background:var(--panel-2); border:1px solid var(--line); font-size:12px;
+  }
+  .chip .dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .chip .chip-x{
+    cursor:pointer; color:var(--text-faint); font-weight:700; padding:0 3px; line-height:1;
+  }
+  .chip .chip-x:hover{color:var(--red);}
+  .chip-empty{color:var(--text-faint); font-size:12px; padding:6px 0;}
+  .metric-note-banner{
+    display:flex; align-items:flex-start; gap:8px; background:var(--teal-dim); border:1px solid #2a5a52;
+    border-radius:8px; padding:10px 14px; margin:-4px 0 18px; font-size:12px; color:#bfe9de; line-height:1.5;
+  }
+  .metric-note-banner b{color:var(--teal);}
+  .metric-note-banner .icon{flex-shrink:0; font-size:13px;}
+  #excludeChipRow{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+  #excludeChipRow .chip{border-color:#5a2f2a; background:#241816;}
+  #excludeChipRow .chip-x:hover{color:var(--red);}
+  .chart-svg-wrap{width:100%; overflow-x:auto; position:relative;}
+  svg.chart{display:block; width:100%; height:auto;}
+  .hover-rect{fill:transparent; cursor:crosshair;}
+  .hover-line{stroke:var(--text-faint); stroke-width:1; stroke-dasharray:3,3; opacity:0; pointer-events:none;}
+  .hover-dot{stroke:var(--panel); stroke-width:2; opacity:0; pointer-events:none;}
+  .chart-tooltip{
+    position:absolute; pointer-events:none; z-index:20; opacity:0; transition:opacity .08s ease;
+    background:#1a2329; border:1px solid var(--line); border-radius:8px; padding:9px 12px;
+    font-size:11.5px; box-shadow:0 8px 20px rgba(0,0,0,.45); min-width:150px;
+  }
+  .chart-tooltip .tt-date{color:var(--text-faint); font-size:10.5px; margin-bottom:6px; font-family:'IBM Plex Mono',monospace;}
+  .chart-tooltip .tt-row{display:flex; align-items:center; gap:6px; justify-content:space-between; padding:2px 0;}
+  .chart-tooltip .tt-name{display:flex; align-items:center; gap:6px; color:var(--text-dim); max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .chart-tooltip .tt-dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+  .chart-tooltip .tt-val{font-family:'IBM Plex Mono',monospace; color:var(--text); font-weight:600; margin-left:10px;}
+  .grid-line{stroke:var(--line-soft); stroke-width:1;}
+  .axis-label{fill:var(--text-faint); font-size:10.5px; font-family:'IBM Plex Mono',monospace;}
+  .series-line{fill:none; stroke-width:2.4;}
+  .series-dot{stroke:var(--panel); stroke-width:1.5;}
+  .quick-add{font-size:11px; color:var(--text-faint); margin-left:auto;}
+  .quick-add button{
+    background:none; border:1px solid var(--line); color:var(--text-dim); border-radius:6px;
+    padding:6px 10px; font-size:11.5px; cursor:pointer; font-family:inherit;
+  }
+  .quick-add button:hover{border-color:var(--teal); color:var(--teal);}
+
+  /* Controls */
+  .controls{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px;
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px;
+  }
+  .ctrl-group{display:flex; align-items:center; gap:8px;}
+  .ctrl-label{font-size:11px; color:var(--text-faint); letter-spacing:.06em; text-transform:uppercase;}
+  select, input[type=text]{
+    background:var(--panel-2); color:var(--text); border:1px solid var(--line);
+    border-radius:6px; padding:7px 10px; font-size:13px; font-family:inherit;
+    outline:none;
+  }
+  select:focus, input[type=text]:focus{border-color:var(--teal);}
+  input[type=text]{width:180px;}
+  .am-pills{display:flex; gap:6px; flex-wrap:wrap;}
+  .pill{
+    padding:6px 13px; border-radius:999px; border:1px solid var(--line);
+    background:var(--panel-2); color:var(--text-dim); font-size:12.5px; cursor:pointer;
+    transition:all .12s ease; user-select:none;
+  }
+  .pill:hover{border-color:var(--text-faint); color:var(--text);}
+  .pill.active{background:var(--teal-dim); border-color:var(--teal); color:var(--teal); font-weight:600;}
+
+  /* Tabs */
+  .tabs{display:flex; gap:6px; margin-bottom:14px;}
+  .tab-btn{
+    border:1px solid var(--line); background:var(--panel); color:var(--text-dim);
+    padding:10px 20px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+    border-radius:8px 8px 0 0; border-bottom:none; position:relative; top:1px;
+  }
+  .tab-btn.active{background:var(--panel-2); color:var(--text); border-bottom:2px solid var(--panel-2);}
+  .tab-btn.active.tab-actual{border-top:2px solid var(--amber);}
+  .tab-btn.active.tab-wow{border-top:2px solid var(--teal);}
+  .tab-btn.active.tab-total{border-top:2px solid #8fa5ff;}
+  .tab-btn.active.tab-byam{border-top:2px solid #e07fd0;}
+
+  /* Table */
+  .table-wrap{
+    background:var(--panel-2); border:1px solid var(--line); border-radius:0 var(--radius) var(--radius) var(--radius);
+    overflow:hidden;
+  }
+  .table-scroll{overflow-x:auto;}
+  table{border-collapse:collapse; width:100%; min-width:1200px;}
+  thead th{
+    position:sticky; top:0; background:#1a2329; z-index:2;
+    text-align:right; font-size:10.5px; color:var(--text-faint); font-weight:600;
+    letter-spacing:.03em; padding:9px 10px;
+    border-bottom:1px solid var(--line); white-space:nowrap; cursor:pointer;
+  }
+  thead th:hover{color:var(--text);}
+  thead th.left{text-align:left;}
+  thead th.nosort{cursor:default;}
+  thead tr.group-row th{
+    text-align:center; font-size:10.5px; color:var(--text-dim); background:#151d22;
+    border-bottom:1px solid var(--line-soft); padding:7px 6px; text-transform:none; letter-spacing:0;
+  }
+  thead th .arrow{opacity:.35; margin-left:3px; font-size:9px;}
+  thead th.sorted .arrow{opacity:1; color:var(--teal);}
+  thead th.metric-imp{color:#7fd6c4;}
+  thead th.metric-rev{color:#e0ac5f;}
+  tbody td{
+    padding:9px 10px; font-size:12px; border-bottom:1px solid var(--line-soft);
+    white-space:nowrap; text-align:right;
+  }
+  tbody td.left{text-align:left;}
+  tbody tr{transition:background .1s ease;}
+  tbody tr:hover{background:#20292f;}
+  .am-tag{
+    display:inline-block; padding:2px 9px; border-radius:5px; font-size:11px; font-weight:600;
+    background:#22303a; color:#8fd6ff;
+  }
+  .hospital-name{font-weight:500; color:var(--text);}
+  .hospital-name.clickable{cursor:pointer;}
+  .hospital-name.clickable:hover{color:var(--amber); text-decoration:underline;}
+  .hospital-sub{color:var(--text-faint); font-size:11px;}
+  .tier-badge{
+    font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:4px;
+    background:var(--panel); color:var(--text-dim); border:1px solid var(--line);
+  }
+  .val-cell{font-family:'IBM Plex Mono',monospace;}
+  .val-cell.imp{color:#bfe9de;}
+  .val-cell.rev{color:#f0cf9e;}
+  .wow-cell{font-family:'IBM Plex Mono',monospace; font-size:11px;}
+  tfoot td{
+    padding:12px; font-size:11.5px; color:var(--text-faint); border-top:1px solid var(--line);
+    text-align:left;
+  }
+  .empty-row td{text-align:center; padding:40px; color:var(--text-faint);}
+  ::-webkit-scrollbar{height:8px; width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  #refreshBtn:hover{background:#204840;}
+  #refreshBtn:disabled{opacity:.6; cursor:default;}
+
+  footer{
+    text-align:center; color:var(--text-faint); font-size:11px; padding:24px 0 0;
+  }
+
+  @media (max-width:640px){
+    header{flex-direction:column; align-items:flex-start;}
+    .controls{flex-direction:column; align-items:stretch;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand-eyebrow">Healingpaper · Growth Ops</div>
+    <h1>26-3차 시즌 CPC 성과 트래커</h1>
+    <div class="sub">광고 집행 수 &amp; CPC 매출액 · 병원별 · AM별 · 주차 비교</div>
+  </div>
+  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+    <div style="text-align:right;">
+      <div class="period-badge" id="periodBadge">·</div>
+      <div id="lastUpdated" style="font-size:10.5px; color:var(--text-faint); margin-top:5px;">초기 데이터 (빌드 시점 기준)</div>
+    </div>
+    <button id="refreshBtn" style="background:var(--teal-dim); border:1px solid var(--teal); color:var(--teal); border-radius:8px; padding:9px 16px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:6px;">
+      <span id="refreshIcon">↻</span> 새로고침
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <div class="kpis" id="kpiRow"></div>
+
+  <div class="metric-note-banner">
+    <span class="icon">ⓘ</span>
+    <span><b>광고 집행 수</b>는 광고가 실제로 <b>노출(입찰 성공)된 이벤트 수</b>만 집계돼요. 광고 집행 이벤트 자체는 10건이어도, 그중 8건만 노출(입찰 성공)됐다면 8로 표시될 수 있어요.</span>
+  </div>
+
+  <div class="section-title">
+    <h2>병원별 주차 추이 비교</h2>
+    <span class="section-sub">검색해서 병원을 추가하면 겹쳐서 비교할 수 있어요 (최대 8개)</span>
+  </div>
+
+  <div class="chart-panel">
+    <div class="chart-toolbar">
+      <div class="picker-wrap">
+        <input type="text" id="pickerInput" placeholder="병원명으로 검색해서 비교 추가...">
+        <div class="picker-dropdown" id="pickerDropdown" style="display:none;"></div>
+      </div>
+      <div class="metric-toggle">
+        <button id="chartBtnImp" class="imp">광고 집행 수</button>
+        <button id="chartBtnRev" class="active rev">CPC 매출액</button>
+      </div>
+      <div class="quick-add">
+        <button id="quickTop5">상위 5개 병원 담기</button>
+      </div>
+    </div>
+    <div class="chip-row" id="chipRow"></div>
+    <div class="chart-svg-wrap" id="chartWrap"></div>
+  </div>
+
+  <div class="section-title">
+    <h2>전체 데이터</h2>
+    <span class="section-sub">필터로 좁혀서 실제값 / WoW 증감률을 확인하세요</span>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <span class="ctrl-label">AM</span>
+      <div class="am-pills" id="amPills"></div>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Tier</span>
+      <select id="tierSelect"><option value="">전체</option></select>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">지역</span>
+      <select id="districtSelect"><option value="">전체</option></select>
+    </div>
+    <div class="ctrl-group" style="flex:1; min-width:180px;">
+      <input type="text" id="searchInput" placeholder="병원명 검색...">
+    </div>
+    <div class="ctrl-group picker-wrap" style="flex:1; min-width:200px;">
+      <input type="text" id="excludeInput" placeholder="제외할 병원명 검색...">
+      <div class="picker-dropdown" id="excludeDropdown" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div class="chip-row" id="excludeChipRow" style="margin:-4px 0 14px;"></div>
+
+  <div class="tabs">
+    <button class="tab-btn tab-actual active" id="tabActual">실제값 (광고 집행·매출)</button>
+    <button class="tab-btn tab-wow" id="tabWow">WoW 증감률</button>
+    <button class="tab-btn tab-byam" id="tabByAM">AM별 합계</button>
+    <button class="tab-btn tab-total" id="tabTotal">총 합산</button>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+        <tfoot>
+          <tr><td id="footNote" colspan="30"></td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <footer>최근 8주 (6.1 ~ 7.20) · 컬럼 클릭으로 정렬 · 병원명 클릭으로 비교 차트에 추가 · WoW는 직전 주 대비 증감률</footer>
+</main>
+
+<script>
+// Vercel에 배포하면 같은 도메인의 /api/refresh 를 호출합니다 (CORS 문제 없음).
+const REFRESH_URL = "/api/refresh";
+
+let DATA = {"weeks": ["2026. 7. 20.", "2026. 7. 13.", "2026. 7. 6.", "2026. 6. 29.", "2026. 6. 22.", "2026. 6. 15.", "2026. 6. 8.", "2026. 6. 1."], "hospitals": [{"am": "Ace", "hospital_id": "414", "hospital": "아이유의원(강남구)", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 21, 21, 21, 21, 21, 21, 21], "impressions_delta": [-3, 0, 0, 0, 0, 0, 0], "revenue": [78850, 113800, 119430, 98920, 87980, 97810, 119830, 109880], "revenue_delta_pct": [-30.7, -4.7, 20.7, 12.4, -10.1, -18.4, 9.1]}, {"am": "Ace", "hospital_id": "3776", "hospital": "더끌림산부인과의원", "tier": "2", "district": "비강남서초", "hgroup": "정식입점", "impressions": [90, 105, 105, 105, 103, 105, 105, 105], "impressions_delta": [-15, 0, 0, 2, -2, 0, 0], "revenue": [1468360, 1752620, 1616070, 1489390, 1535430, 1777320, 2112640, 2405180], "revenue_delta_pct": [-16.2, 8.4, 8.5, -3.0, -13.6, -15.9, -12.2]}, {"am": "Ace", "hospital_id": "5349", "hospital": "슬림영의원", "tier": "2", "district": "비강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 5, 6, 7, 7, 7], "impressions_delta": [-1, 0, 2, -1, -1, 0, 0], "revenue": [24110, 26230, 16540, 7440, 11420, 14080, 13600, 13740], "revenue_delta_pct": [-8.1, 58.6, 122.3, -34.9, -18.9, 3.5, -1.0]}, {"am": "Ace", "hospital_id": "8096", "hospital": "밀락씨의원", "tier": "2", "district": "비강남서초", "hgroup": "정식입점", "impressions": [29, 35, 34, 35, 35, 31, 40, 49], "impressions_delta": [-6, 1, -1, 0, 4, -9, -9], "revenue": [126930, 238330, 137180, 136170, 139630, 100500, 204570, 290150], "revenue_delta_pct": [-46.7, 73.7, 0.7, -2.5, 38.9, -50.9, -29.5]}, {"am": "Hardy", "hospital_id": "4", "hospital": "디엠성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [73, 84, 86, 84, 86, 83, 85, 85], "impressions_delta": [-11, -2, 2, -2, 3, -2, 0], "revenue": [3328580, 4186630, 3947620, 4035260, 3672440, 3266940, 2891790, 2776960], "revenue_delta_pct": [-20.5, 6.1, -2.2, 9.9, 12.4, 13.0, 4.1]}, {"am": "Hardy", "hospital_id": "23", "hospital": "바노바기성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [28, 33, 35, 35, 34, 35, 35, 35], "impressions_delta": [-5, -2, 0, 1, -1, 0, 0], "revenue": [657100, 960640, 1111760, 1063990, 1224520, 1275530, 1349710, 1431450], "revenue_delta_pct": [-31.6, -13.6, 4.5, -13.1, -4.0, -5.5, -5.7]}, {"am": "Hardy", "hospital_id": "116", "hospital": "티에스성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [23, 28, 28, 28, 28, 28, 28, 28], "impressions_delta": [-5, 0, 0, 0, 0, 0, 0], "revenue": [957550, 1147450, 893040, 838910, 817800, 1320160, 1004330, 1278380], "revenue_delta_pct": [-16.5, 28.5, 6.5, 2.6, -38.1, 31.4, -21.4]}, {"am": "Hardy", "hospital_id": "141", "hospital": "마블성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 21, 21, 21, 21, 21, 21, 21], "impressions_delta": [-3, 0, 0, 0, 0, 0, 0], "revenue": [960670, 989230, 973270, 878870, 948200, 1126640, 1066270, 1258800], "revenue_delta_pct": [-2.9, 1.6, 10.7, -7.3, -15.8, 5.7, -15.3]}, {"am": "Hardy", "hospital_id": "189", "hospital": "뷰성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, 8, 10, 10, 10, 10, 10, 10], "impressions_delta": [-8, -2, 0, 0, 0, 0, 0], "revenue": [null, 2496340, 3085990, 2766750, 3035330, 2961770, 3045950, 2885070], "revenue_delta_pct": [-100, -19.1, 11.5, -8.8, 2.5, -2.8, 5.6]}, {"am": "Hardy", "hospital_id": "200", "hospital": "티오피성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [1, 1, null, 1, 1, null, null, null], "impressions_delta": [0, 1, -1, 0, 1, 0, 0], "revenue": [1420, 2360, null, 2310, 1990, null, null, null], "revenue_delta_pct": [-39.8, null, -100, 16.1, null, null, null]}, {"am": "Hardy", "hospital_id": "207", "hospital": "현대미학성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [12, 13, 17, 12, 13, 10, 9, 13], "impressions_delta": [-1, -4, 5, -1, 3, 1, -4], "revenue": [40700, 45100, 31350, 22550, 39050, 37400, 42900, 39600], "revenue_delta_pct": [-9.8, 43.9, 39.0, -42.3, 4.4, -12.8, 8.3]}, {"am": "Hardy", "hospital_id": "322", "hospital": "메이드영성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [34, 39, 34, 35, 33, 32, 29, 29], "impressions_delta": [-5, 5, -1, 2, 1, 3, 0], "revenue": [1502370, 1559480, 1217420, 1242750, 1446270, 2060110, 1810960, 1577170], "revenue_delta_pct": [-3.7, 28.1, -2.0, -14.1, -29.8, 13.8, 14.8]}, {"am": "Hardy", "hospital_id": "341", "hospital": "필의원", "tier": "2", "district": "비강남서초", "hgroup": "정식입점", "impressions": [1, 1, 4, 5, 5, 3, 7, 6], "impressions_delta": [0, -3, -1, 0, 2, -4, 1], "revenue": [550, 550, 8160, 10180, 3530, 2330, 19120, 31710], "revenue_delta_pct": [0, -93.3, -19.8, 188.4, 51.5, -87.8, -39.7]}, {"am": "Hardy", "hospital_id": "343", "hospital": "스노우의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [36, 42, 42, 42, 42, 41, 42, 43], "impressions_delta": [-6, 0, 0, 0, 1, -1, -1], "revenue": [145190, 113880, 79000, 70530, 87110, 112820, 146380, 156050], "revenue_delta_pct": [27.5, 44.2, 12.0, -19.0, -22.8, -22.9, -6.2]}, {"am": "Hardy", "hospital_id": "370", "hospital": "팝성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [8, 14, 14, 14, 14, 14, 14, 14], "impressions_delta": [-6, 0, 0, 0, 0, 0, 0], "revenue": [1190000, 1455130, 1635260, 1407340, 1359960, 1506690, 1319360, 1393370], "revenue_delta_pct": [-18.2, -11.0, 16.2, 3.5, -9.7, 14.2, -5.3]}, {"am": "Hardy", "hospital_id": "580", "hospital": "허쉬성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [94, 103, 99, 99, 103, 97, 97, 95], "impressions_delta": [-9, 4, 0, -4, 6, 0, 2], "revenue": [1422870, 1714940, 1583590, 1387290, 1169240, 1332050, 1083530, 1307500], "revenue_delta_pct": [-17.0, 8.3, 14.1, 18.6, -12.2, 22.9, -17.1]}, {"am": "Hardy", "hospital_id": "826", "hospital": "유라인의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 21, 21, 21, 21, 21, 21, 21], "impressions_delta": [-3, 0, 0, 0, 0, 0, 0], "revenue": [410580, 479680, 491760, 465440, 431400, 469650, 433460, 476690], "revenue_delta_pct": [-14.4, -2.5, 5.7, 7.9, -8.1, 8.3, -9.1]}, {"am": "Hardy", "hospital_id": "1793", "hospital": "송도리앤스타의원", "tier": "2", "district": "인천", "hgroup": "정식입점", "impressions": [18, 21, 21, 21, 21, 18, null, null], "impressions_delta": [-3, 0, 0, 0, 3, 18, 0], "revenue": [143320, 244640, 259750, 232460, 215820, 139550, null, null], "revenue_delta_pct": [-41.4, -5.8, 11.7, 7.7, 54.7, null, null]}, {"am": "Hardy", "hospital_id": "1842", "hospital": "지앤지병원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, 1, null, null, null, null, 1, null], "impressions_delta": [-1, 1, 0, 0, 0, -1, 1], "revenue": [null, 550, null, null, null, null, 550, null], "revenue_delta_pct": [-100, null, null, null, null, -100, null]}, {"am": "Hardy", "hospital_id": "2543", "hospital": "청담오케이성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [12, 12, 14, 14, 14, 14, 14, 14], "impressions_delta": [0, -2, 0, 0, 0, 0, 0], "revenue": [958430, 945680, 1059690, 957020, 748470, 969330, 892580, 1154700], "revenue_delta_pct": [1.3, -10.8, 10.7, 27.9, -22.8, 8.6, -22.7]}, {"am": "Hardy", "hospital_id": "2771", "hospital": "포인트업의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 13], "impressions_delta": [-1, 0, 0, 0, 0, 0, -6], "revenue": [404060, 461380, 311300, 233810, 189220, 235510, 439880, 785680], "revenue_delta_pct": [-12.4, 48.2, 33.1, 23.6, -19.7, -46.5, -44.0]}, {"am": "Hardy", "hospital_id": "2788", "hospital": "닥터정 리반의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [326510, 283480, 437680, 455240, 663840, 680070, 120890, 257530], "revenue_delta_pct": [15.2, -35.2, -3.9, -31.4, -2.4, 462.6, -53.1]}, {"am": "Hardy", "hospital_id": "3550", "hospital": "이승우의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 21, 21, 21, 17, 16, 21, 21], "impressions_delta": [-3, 0, 0, 4, 1, -5, 0], "revenue": [531090, 570010, 583410, 591290, 200460, 231870, 475550, 531550], "revenue_delta_pct": [-6.8, -2.3, -1.3, 195.0, -13.5, -51.2, -10.5]}, {"am": "Hardy", "hospital_id": "3569", "hospital": "아크성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [5, 3, 3, 3, 5, 5, 4, null], "impressions_delta": [2, 0, 0, -2, 0, 1, 4], "revenue": [225060, 313570, 255740, 314710, 517510, 521200, 411620, null], "revenue_delta_pct": [-28.2, 22.6, -18.7, -39.2, -0.7, 26.6, null]}, {"am": "Hardy", "hospital_id": "3739", "hospital": "서진성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [18240, 38950, 49010, 32210, 44340, 36140, 28710, 33450], "revenue_delta_pct": [-53.2, -20.5, 52.2, -27.4, 22.7, 25.9, -14.2]}, {"am": "Hardy", "hospital_id": "3813", "hospital": "노원아이디의원", "tier": "1", "district": "비강남서초", "hgroup": "정식입점", "impressions": [null, 16, 28, 28, 27, 27, 28, 28], "impressions_delta": [-16, -12, 0, 1, 0, -1, 0], "revenue": [null, 64400, 131140, 89780, 95330, 157680, 217490, 253940], "revenue_delta_pct": [-100, -50.9, 46.1, -5.8, -39.5, -27.5, -14.4]}, {"am": "Hardy", "hospital_id": "4127", "hospital": "휴고성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [2, 3, 19, 31, 14, 19, null, null], "impressions_delta": [-1, -16, -12, 17, -5, 19, 0], "revenue": [13050, 196430, 1452560, 1232080, 466820, 768680, null, null], "revenue_delta_pct": [-93.4, -86.5, 17.9, 163.9, -39.3, null, null]}, {"am": "Hardy", "hospital_id": "4152", "hospital": "땡큐성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [30, 36, 36, 32, 34, 34, 28, 30], "impressions_delta": [-6, 0, 4, -2, 0, 6, -2], "revenue": [139660, 184520, 106980, 57110, 28550, 48570, 15400, 18700], "revenue_delta_pct": [-24.3, 72.5, 87.3, 100.0, -41.2, 215.4, -17.6]}, {"am": "Hardy", "hospital_id": "4273", "hospital": "지힐링스퀘어의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 9, 17, null, null, null, null, null], "impressions_delta": [-3, -8, 17, 0, 0, 0, 0], "revenue": [534760, 156540, 1459200, null, null, null, null, null], "revenue_delta_pct": [241.6, -89.3, null, null, null, null, null]}, {"am": "Hardy", "hospital_id": "4647", "hospital": "BLS(비엘에스)의원-본점", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [1, 6, 7, 7, 14, 21, 18, 16], "impressions_delta": [-5, -1, 0, -7, -7, 3, 2], "revenue": [1100, 11000, 14850, 11550, 53900, 94600, 100100, 102850], "revenue_delta_pct": [-90.0, -25.9, 28.6, -78.6, -43.0, -5.5, -2.7]}, {"am": "Hardy", "hospital_id": "4889", "hospital": "강남리슬림의원", "tier": "2", "district": "강남서초", "hgroup": "육미병", "impressions": [6, 7, 6, 5, 4, 7, 6, 4], "impressions_delta": [-1, 1, 1, 1, -3, 1, 2], "revenue": [41490, 50250, 35790, 32260, 25860, 59820, 52370, 23180], "revenue_delta_pct": [-17.4, 40.4, 10.9, 24.7, -56.8, 14.2, 125.9]}, {"am": "Hardy", "hospital_id": "5260", "hospital": "포메디한의원", "tier": "2", "district": "인천", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 13, 14, 14], "impressions_delta": [-1, 0, 0, 0, -6, -1, 0], "revenue": [96010, 118430, 91530, 100290, 91150, 240060, 274760, 309030], "revenue_delta_pct": [-18.9, 29.4, -8.7, 10.0, -62.0, -12.6, -11.1]}, {"am": "Hardy", "hospital_id": "5294", "hospital": "도약한의원", "tier": "2", "district": "비강남서초", "hgroup": "정식입점", "impressions": [17, 20, 21, 21, 21, 21, 21, 21], "impressions_delta": [-3, -1, 0, 0, 0, 0, 0], "revenue": [320190, 406220, 456320, 437090, 438060, 447530, 485160, 465850], "revenue_delta_pct": [-21.2, -11.0, 4.4, -0.2, -2.1, -7.8, 4.1]}, {"am": "Hardy", "hospital_id": "5640", "hospital": "브이에스(VS)라인의원-인천구월점", "tier": "1", "district": "인천", "hgroup": "정식입점", "impressions": [24, 28, 28, 28, 16, null, null, null], "impressions_delta": [-4, 0, 0, 12, 16, 0, 0], "revenue": [63250, 65450, 78100, 95700, 38500, null, null, null], "revenue_delta_pct": [-3.4, -16.2, -18.4, 148.6, null, null, null]}, {"am": "Hardy", "hospital_id": "6221", "hospital": "래인의원", "tier": "1", "district": "비강남서초", "hgroup": "정식입점", "impressions": [69, 80, 82, 77, 78, 81, 81, 80], "impressions_delta": [-11, -2, 5, -1, -3, 0, 1], "revenue": [427950, 441730, 455340, 443770, 504960, 527010, 621940, 602000], "revenue_delta_pct": [-3.1, -3.0, 2.6, -12.1, -4.2, -15.3, 3.3]}, {"am": "Hardy", "hospital_id": "7193", "hospital": "디라이트외과의원", "tier": "2", "district": "강남서초", "hgroup": "육미병", "impressions": [4, 2, 1, 3, 3, null, null, null], "impressions_delta": [2, 1, -2, 0, 3, 0, 0], "revenue": [9860, 5820, 2580, 7610, 2520, null, null, null], "revenue_delta_pct": [69.4, 125.6, -66.1, 202.0, null, null, null]}, {"am": "Hardy", "hospital_id": "7224", "hospital": "드림페이스의원", "tier": "1", "district": "비강남서초", "hgroup": "정식입점", "impressions": [12, 14, 8, null, null, null, null, null], "impressions_delta": [-2, 6, 8, 0, 0, 0, 0], "revenue": [350820, 395870, 177380, null, null, null, null, null], "revenue_delta_pct": [-11.4, 123.2, null, null, null, null, null]}, {"am": "Hardy", "hospital_id": "7294", "hospital": "라인의정석의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [306710, 365860, 361060, 366760, 360560, 364630, 363300, 362690], "revenue_delta_pct": [-16.2, 1.3, -1.6, 1.7, -1.1, 0.4, 0.2]}, {"am": "Hardy", "hospital_id": "7321", "hospital": "레브치과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [24, 25, 22, 21, 21, 21, 14, 15], "impressions_delta": [-1, 3, 1, 0, 0, 7, -1], "revenue": [143140, 165670, 100780, 143420, 111150, 66120, 69470, 60440], "revenue_delta_pct": [-13.6, 64.4, -29.7, 29.0, 68.1, -4.8, 14.9]}, {"am": "Hardy", "hospital_id": "7488", "hospital": "제이디리체스의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 6, 1], "impressions_delta": [-1, 0, 0, 0, 0, 1, 5], "revenue": [46100, 44410, 59280, 43560, 52320, 60380, 46630, 2970], "revenue_delta_pct": [3.8, -25.1, 36.1, -16.7, -13.3, 29.5, 1470.0]}, {"am": "Lyn", "hospital_id": "15", "hospital": "아이디병원-피부과", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, null, null, null, null, 1, 7, 7], "impressions_delta": [0, 0, 0, 0, -1, -6, 0], "revenue": [null, null, null, null, null, 3720, 365640, 390050], "revenue_delta_pct": [null, null, null, null, -100, -99.0, -6.3]}, {"am": "Lyn", "hospital_id": "55", "hospital": "쥬얼리성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [11, 21, 21, 13, null, null, 3, null], "impressions_delta": [-10, 0, 8, 13, 0, -3, 3], "revenue": [323150, 754850, 762280, 445200, null, null, 189390, null], "revenue_delta_pct": [-57.2, -1.0, 71.2, null, null, -100, null]}, {"am": "Lyn", "hospital_id": "62", "hospital": "그랜드성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [111980, 152980, 146280, 110660, 105890, 127970, 168770, 185370], "revenue_delta_pct": [-26.8, 4.6, 32.2, 4.5, -17.3, -24.2, -9.0]}, {"am": "Lyn", "hospital_id": "154", "hospital": "엔젤미의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [12, 14, 14, 14, 14, 14, 14, 14], "impressions_delta": [-2, 0, 0, 0, 0, 0, 0], "revenue": [1116100, 1451060, 1531220, 1437190, 1373490, 1492820, 1531600, 1609180], "revenue_delta_pct": [-23.1, -5.2, 6.5, 4.6, -8.0, -2.5, -4.8]}, {"am": "Lyn", "hospital_id": "250", "hospital": "디에이성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, null, null, null, 2, 7, 7, 9], "impressions_delta": [0, 0, 0, -2, -5, 0, -2], "revenue": [null, null, null, null, 402310, 2006020, 2334880, 2851440], "revenue_delta_pct": [null, null, null, -100, -79.9, -14.1, -18.1]}, {"am": "Lyn", "hospital_id": "257", "hospital": "아이디병원-본원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [60, 67, 56, 56, 54, 65, 72, 67], "impressions_delta": [-7, 11, 0, 2, -11, -7, 5], "revenue": [14089930, 15277840, 13621250, 13696970, 11933590, 14941410, 24044730, 20533380], "revenue_delta_pct": [-7.8, 12.2, -0.6, 14.8, -20.1, -37.9, 17.1]}, {"am": "Lyn", "hospital_id": "262", "hospital": "아이디병원-치과", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, null, null, null, null, null, 6, 8], "impressions_delta": [0, 0, 0, 0, 0, -6, -2], "revenue": [null, null, null, null, null, null, 337940, 400340], "revenue_delta_pct": [null, null, null, null, null, -100, -15.6]}, {"am": "Lyn", "hospital_id": "369", "hospital": "미호성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [4, 3, 2, 2, 3, 3, 2, 2], "impressions_delta": [1, 1, 0, -1, 0, 1, 0], "revenue": [7890, 4890, 5560, 8910, 11540, 8260, 12130, 2720], "revenue_delta_pct": [61.3, -12.1, -37.6, -22.8, 39.7, -31.9, 346.0]}, {"am": "Lyn", "hospital_id": "378", "hospital": "리버스의원-명동점", "tier": "1", "district": "비강남서초", "hgroup": "정식입점", "impressions": [54, 63, 62, 62, 61, 61, 61, 61], "impressions_delta": [-9, 1, 0, 1, 0, 0, 0], "revenue": [396250, 396620, 353610, 312060, 334140, 315810, 305170, 374490], "revenue_delta_pct": [-0.1, 12.2, 13.3, -6.6, 5.8, 3.5, -18.5]}, {"am": "Lyn", "hospital_id": "519", "hospital": "라리성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [12, 13, 12, 14, 14, 13, 14, 13], "impressions_delta": [-1, 1, -2, 0, 1, -1, 1], "revenue": [29150, 23650, 25850, 19250, 29700, 24200, 16500, 23100], "revenue_delta_pct": [23.3, -8.5, 34.3, -35.2, 22.7, 46.7, -28.6]}, {"am": "Lyn", "hospital_id": "535", "hospital": "오스킨성형외과", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [12, 10, 14, 14, 14, 12, 14, 13], "impressions_delta": [2, -4, 0, 0, 2, -2, 1], "revenue": [397460, 298560, 358660, 338940, 351630, 246430, 362780, 288710], "revenue_delta_pct": [33.1, -16.8, 5.8, -3.6, 42.7, -32.1, 25.7]}, {"am": "Lyn", "hospital_id": "763", "hospital": "제림성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [30, 35, 35, 35, 35, 35, 35, 35], "impressions_delta": [-5, 0, 0, 0, 0, 0, 0], "revenue": [897750, 1416530, 1582080, 1477900, 1659790, 1531040, 1754340, 1727180], "revenue_delta_pct": [-36.6, -10.5, 7.0, -11.0, 8.4, -12.7, 1.6]}, {"am": "Lyn", "hospital_id": "865", "hospital": "리버스의원-홍대점", "tier": "1", "district": "비강남서초", "hgroup": "정식입점", "impressions": [55, 69, 77, 77, 77, 85, 78, 74], "impressions_delta": [-14, -8, 0, 0, -8, 7, 4], "revenue": [360790, 483580, 552500, 463430, 439810, 614270, 714110, 586960], "revenue_delta_pct": [-25.4, -12.5, 19.2, 5.4, -28.4, -14.0, 21.7]}, {"am": "Lyn", "hospital_id": "1020", "hospital": "바이미성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, null, null, 1, 5, 5, 4, 5], "impressions_delta": [0, 0, -1, -4, 0, 1, -1], "revenue": [null, null, null, 12780, 321280, 384580, 221750, 450040], "revenue_delta_pct": [null, null, -100, -96.0, -16.5, 73.4, -50.7]}, {"am": "Lyn", "hospital_id": "1190", "hospital": "베리굿성형외과", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [25, 35, 33, 28, 28, 28, 30, 28], "impressions_delta": [-10, 2, 5, 0, 0, -2, 2], "revenue": [1533640, 2775030, 2271200, 1962150, 2094090, 2420750, 2280420, 2397920], "revenue_delta_pct": [-44.7, 22.2, 15.8, -6.3, -13.5, 6.2, -4.9]}, {"am": "Lyn", "hospital_id": "1889", "hospital": "제이필의원-강남점", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [8, null, null, null, null, null, null, null], "impressions_delta": [8, 0, 0, 0, 0, 0, 0], "revenue": [432850, null, null, null, null, null, null, null], "revenue_delta_pct": [null, null, null, null, null, null, null]}, {"am": "Lyn", "hospital_id": "2052", "hospital": "하이봄성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [2436050, 2733750, 2652320, 3031440, 3188140, 3200450, 3188970, 3175080], "revenue_delta_pct": [-10.9, 3.1, -12.5, -4.9, -0.4, 0.4, 0.4]}, {"am": "Lyn", "hospital_id": "2117", "hospital": "TU치과의원(티유치과)", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [12, 14, 14, 14, 14, 14, 14, 14], "impressions_delta": [-2, 0, 0, 0, 0, 0, 0], "revenue": [298760, 468720, 518570, 460320, 556380, 492410, 687850, 705590], "revenue_delta_pct": [-36.3, -9.6, 12.7, -17.3, 13.0, -28.4, -2.5]}, {"am": "Lyn", "hospital_id": "2764", "hospital": "골든발란스여성의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [5, 7, 6, 4, 6, 7, 6, 5], "impressions_delta": [-2, 1, 2, -2, -1, 1, 1], "revenue": [9910, 15420, 12100, 6600, 6130, 11070, 7220, 7700], "revenue_delta_pct": [-35.7, 27.4, 83.3, 7.7, -44.6, 53.3, -6.2]}, {"am": "Lyn", "hospital_id": "3002", "hospital": "새김성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [25, 25, 27, 28, 31, 23, 26, 13], "impressions_delta": [0, -2, -1, -3, 8, -3, 13], "revenue": [1130000, 1279420, 1441890, 1414660, 2111560, 1178160, 1306990, 624640], "revenue_delta_pct": [-11.7, -11.3, 1.9, -33.0, 79.2, -9.9, 109.2]}, {"am": "Lyn", "hospital_id": "3004", "hospital": "에이비성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [23, 26, 26, 26, 26, 26, 19, 19], "impressions_delta": [-3, 0, 0, 0, 0, 7, 0], "revenue": [3130341, 3863920, 3837230, 3796120, 3736220, 3986810, 4408040, 4382660], "revenue_delta_pct": [-19.0, 0.7, 1.1, 1.6, -6.3, -9.6, 0.6]}, {"am": "Lyn", "hospital_id": "3179", "hospital": "온리프의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [61, 79, 78, 83, 94, 98, 98, 103], "impressions_delta": [-18, 1, -5, -11, -4, 0, -5], "revenue": [358550, 340480, 307290, 291950, 403310, 481600, 504180, 568430], "revenue_delta_pct": [5.3, 10.8, 5.3, -27.6, -16.3, -4.5, -11.3]}, {"am": "Lyn", "hospital_id": "3741", "hospital": "로담한의원-잠실점", "tier": "2", "district": "비강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [107810, 139230, 116950, 113020, 97350, 110650, 119540, 117490], "revenue_delta_pct": [-22.6, 19.1, 3.5, 16.1, -12.0, -7.4, 1.7]}, {"am": "Lyn", "hospital_id": "3831", "hospital": "위버스성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, 2, 10, 6, 3, 4, 5, 5], "impressions_delta": [-2, -8, 4, 3, -1, -1, 0], "revenue": [null, 114360, 364850, 365890, 3290, 9840, 9330, 70350], "revenue_delta_pct": [-100, -68.7, -0.3, 11021.3, -66.6, 5.5, -86.7]}, {"am": "Lyn", "hospital_id": "4494", "hospital": "강남아이디의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [29, 30, 31, 29, 31, 30, 30, 33], "impressions_delta": [-1, -1, 2, -2, 1, 0, -3], "revenue": [341610, 454990, 587780, 301040, 427750, 477750, 679670, 650720], "revenue_delta_pct": [-24.9, -22.6, 95.2, -29.6, -10.5, -29.7, 4.4]}, {"am": "Lyn", "hospital_id": "4608", "hospital": "압구정튠의원", "tier": "2", "district": "강남서초", "hgroup": "육미병", "impressions": [1, 5, 5, 6, 6, 4, 6, 10], "impressions_delta": [-4, 0, -1, 0, 2, -2, -4], "revenue": [2790, 90310, 130760, 192830, 160660, 144280, 176180, 273120], "revenue_delta_pct": [-96.9, -30.9, -32.2, 20.0, 11.4, -18.1, -35.5]}, {"am": "Lyn", "hospital_id": "4687", "hospital": "몬스터의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [266510, 307280, 356620, 305600, 326660, 345890, 366730, 335150], "revenue_delta_pct": [-13.3, -13.8, 16.7, -6.4, -5.6, -5.7, 9.4]}, {"am": "Lyn", "hospital_id": "4848", "hospital": "메종드엠의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [118150, 79890, 82360, 73270, 86330, 93920, 89820, 94790], "revenue_delta_pct": [47.9, -3.0, 12.4, -15.1, -8.1, 4.6, -5.2]}, {"am": "Lyn", "hospital_id": "4916", "hospital": "밸런스랩성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 21, 21, 21, 21, 21, 21, 24], "impressions_delta": [-3, 0, 0, 0, 0, 0, -3], "revenue": [580230, 949060, 1152930, 804730, 746650, 877410, 1197390, 1769340], "revenue_delta_pct": [-38.9, -17.7, 43.3, 7.8, -14.9, -26.7, -32.3]}, {"am": "Lyn", "hospital_id": "5064", "hospital": "연세굿데이치과의원-양재점", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [12, 14, 14, 14, 14, 14, 14, 14], "impressions_delta": [-2, 0, 0, 0, 0, 0, 0], "revenue": [1544460, 1614570, 1816250, 1446650, 1447480, 1670560, 1668780, 1931500], "revenue_delta_pct": [-4.3, -11.1, 25.5, -0.1, -13.4, 0.1, -13.6]}, {"am": "Lyn", "hospital_id": "5800", "hospital": "강남비앤비의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [24, 27, 28, 27, 28, 28, 28, 27], "impressions_delta": [-3, -1, 1, -1, 0, 0, 1], "revenue": [253730, 270090, 244530, 311530, 288300, 332200, 316890, 337700], "revenue_delta_pct": [-6.1, 10.5, -21.5, 8.1, -13.2, 4.8, -6.2]}, {"am": "Lyn", "hospital_id": "5857", "hospital": "우유빛의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [40, 48, 46, 36, 27, 29, 35, 39], "impressions_delta": [-8, 2, 10, 9, -2, -6, -4], "revenue": [2051740, 1360310, 1632060, 1141020, 749970, 980690, 1202910, 1993840], "revenue_delta_pct": [50.8, -16.7, 43.0, 52.1, -23.5, -18.5, -39.7]}, {"am": "Lyn", "hospital_id": "6011", "hospital": "리참성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [13, 10, 9, 20, 13, 11, 9, 10], "impressions_delta": [3, 1, -11, 7, 2, 2, -1], "revenue": [388010, 168300, 105100, 305010, 359190, 117390, 197310, 211340], "revenue_delta_pct": [130.5, 60.1, -65.5, -15.1, 206.0, -40.5, -6.6]}, {"am": "Lyn", "hospital_id": "6517", "hospital": "아이에이치의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [129660, 124360, 135830, 127240, 115080, 147820, 178080, 206700], "revenue_delta_pct": [4.3, -8.4, 6.8, 10.6, -22.1, -17.0, -13.8]}, {"am": "Lyn", "hospital_id": "6561", "hospital": "하이즈의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [28, 32, 33, 34, 35, 35, 35, 35], "impressions_delta": [-4, -1, -1, -1, 0, 0, 0], "revenue": [1341250, 1504520, 792600, 763640, 608180, 719620, 1141570, 1397340], "revenue_delta_pct": [-10.9, 89.8, 3.8, 25.6, -15.5, -37.0, -18.3]}, {"am": "Lyn", "hospital_id": "6586", "hospital": "플래뉴의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [16, 4, null, null, null, 12, 11, 8], "impressions_delta": [12, 4, 0, 0, -12, 1, 3], "revenue": [472340, 34140, null, null, null, 557260, 465690, 450100], "revenue_delta_pct": [1283.5, null, null, null, -100, 19.7, 3.5]}, {"am": "Lyn", "hospital_id": "6615", "hospital": "서울오브치과병원", "tier": "2", "district": "비강남서초", "hgroup": "정식입점", "impressions": [1, 3, 2, 1, 1, null, 5, 5], "impressions_delta": [-2, 1, 1, 0, 1, -5, 0], "revenue": [7910, 19190, 5470, 7150, 4000, null, 17630, 19690], "revenue_delta_pct": [-58.8, 250.8, -23.5, 78.8, null, -100, -10.5]}, {"am": "Lyn", "hospital_id": "7238", "hospital": "디유성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [25, 39, 37, 33, 37, 35, 33, 33], "impressions_delta": [-14, 2, 4, -4, 2, 2, 0], "revenue": [33040, 44130, 28850, 57280, 39600, 27050, 26200, 35290], "revenue_delta_pct": [-25.1, 53.0, -49.6, 44.6, 46.4, 3.2, -25.8]}, {"am": "Lyn", "hospital_id": "7413", "hospital": "더이뻐의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [3, 9, 7, 4, 1, 6, 1, 7], "impressions_delta": [-6, 2, 3, 3, -5, 5, -6], "revenue": [108180, 348220, 358230, 207400, 52260, 308140, 34900, 544650], "revenue_delta_pct": [-68.9, -2.8, 72.7, 296.9, -83.0, 782.9, -93.6]}, {"am": "Lyn", "hospital_id": "7783", "hospital": "르제이의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [1, 1, 3, 1, null, 4, 4, null], "impressions_delta": [0, -2, 2, 1, -4, 0, 4], "revenue": [1160, 11870, 16900, 5850, null, 201480, 310970, null], "revenue_delta_pct": [-90.2, -29.8, 188.9, null, -100, -35.2, null]}, {"am": "Lyn", "hospital_id": "7826", "hospital": "제이필의원-홍대점", "tier": "1", "district": "비강남서초", "hgroup": "정식입점", "impressions": [5, null, null, null, null, null, null, null], "impressions_delta": [5, 0, 0, 0, 0, 0, 0], "revenue": [205700, null, null, null, null, null, null, null], "revenue_delta_pct": [null, null, null, null, null, null, null]}, {"am": "Runa", "hospital_id": "166", "hospital": "에이트성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [36, 42, 42, 30, 20, 15, null, null], "impressions_delta": [-6, 0, 12, 10, 5, 15, 0], "revenue": [4358530, 4454810, 4249650, 3161040, 1966910, 665940, null, null], "revenue_delta_pct": [-2.2, 4.8, 34.4, 60.7, 195.4, null, null]}, {"am": "Runa", "hospital_id": "248", "hospital": "유노성형외과", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [714520, 886900, 838790, 801570, 827530, 878140, 865340, 861190], "revenue_delta_pct": [-19.4, 5.7, 4.6, -3.1, -5.8, 1.5, 0.5]}, {"am": "Runa", "hospital_id": "398", "hospital": "기린성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 21, 21, 21, 21, 17, 14, 14], "impressions_delta": [-3, 0, 0, 0, 4, 3, 0], "revenue": [1651170, 1542550, 1379250, 886540, 967060, 1111580, 1014540, 1083490], "revenue_delta_pct": [7.0, 11.8, 55.6, -8.3, -13.0, 9.6, -6.4]}, {"am": "Runa", "hospital_id": "601", "hospital": "클래시성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [5, 7, 7, 5, 4, 4, 4, 3], "impressions_delta": [-2, 0, 2, 1, 0, 0, 1], "revenue": [19320, 35050, 43230, 13280, 18460, 24760, 18940, 14440], "revenue_delta_pct": [-44.9, -18.9, 225.5, -28.1, -25.4, 30.7, 31.2]}, {"am": "Runa", "hospital_id": "802", "hospital": "모즈의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [41, 46, 49, 53, 55, 51, 48, 42], "impressions_delta": [-5, -3, -4, -2, 4, 3, 6], "revenue": [298420, 778620, 870110, 2370360, 2225500, 2364750, 1551050, 232100], "revenue_delta_pct": [-61.7, -10.5, -63.3, 6.5, -5.9, 52.5, 568.3]}, {"am": "Runa", "hospital_id": "887", "hospital": "디자인성형외과의원", "tier": "1", "district": "부산", "hgroup": "정식입점", "impressions": [30, 35, 33, 34, 35, 35, 24, 16], "impressions_delta": [-5, 2, -1, -1, 0, 11, 8], "revenue": [147400, 168850, 150150, 204600, 255750, 254100, 154000, 97350], "revenue_delta_pct": [-12.7, 12.5, -26.6, -20.0, 0.6, 65.0, 58.2]}, {"am": "Runa", "hospital_id": "1849", "hospital": "나세르의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [11, 11, 11, 11, 9, 5, 5, 5], "impressions_delta": [0, 0, 0, 2, 4, 0, 0], "revenue": [206530, 236330, 226370, 234650, 174830, 114040, 109050, 107730], "revenue_delta_pct": [-12.6, 4.4, -3.5, 34.2, 53.3, 4.6, 1.2]}, {"am": "Runa", "hospital_id": "1860", "hospital": "우리성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [24, 18, 22, 30, 24, 24, 24, 20], "impressions_delta": [6, -4, -8, 6, 0, 0, 4], "revenue": [2315270, 1805120, 2186650, 3131330, 2460870, 2443010, 2491380, 1768870], "revenue_delta_pct": [28.3, -17.4, -30.2, 27.2, 0.7, -1.9, 40.8]}, {"am": "Runa", "hospital_id": "1982", "hospital": "미케이의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 6, 6, 6, 7, 7, 6, 4], "impressions_delta": [0, 0, 0, -1, 0, 1, 2], "revenue": [7600, 7560, 9010, 7410, 13240, 8310, 7620, 5150], "revenue_delta_pct": [0.5, -16.1, 21.6, -44.0, 59.3, 9.1, 48.0]}, {"am": "Runa", "hospital_id": "2140", "hospital": "갤럭시성형외과의원", "tier": "1", "district": "부산", "hgroup": "정식입점", "impressions": [19, 12, null, null, null, null, null, null], "impressions_delta": [7, 12, 0, 0, 0, 0, 0], "revenue": [64350, 28600, null, null, null, null, null, null], "revenue_delta_pct": [125.0, null, null, null, null, null, null]}, {"am": "Runa", "hospital_id": "2186", "hospital": "노트성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [11, 13, 14, 13, 12, 14, 8, null], "impressions_delta": [-2, -1, 1, 1, -2, 6, 8], "revenue": [230510, 390750, 500390, 662150, 686380, 951290, 308400, null], "revenue_delta_pct": [-41.0, -21.9, -24.4, -3.5, -27.8, 208.5, null]}, {"am": "Runa", "hospital_id": "2221", "hospital": "리스펙성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 6, 7, 6, 7], "impressions_delta": [-1, 0, 0, 1, -1, 1, -1], "revenue": [381820, 695080, 571210, 466860, 348580, 432720, 167790, 232320], "revenue_delta_pct": [-45.1, 21.7, 22.4, 33.9, -19.4, 157.9, -27.8]}, {"am": "Runa", "hospital_id": "2681", "hospital": "메이필의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, null, null, null, null, null, 2, 4], "impressions_delta": [0, 0, 0, 0, 0, -2, -2], "revenue": [null, null, null, null, null, null, 257600, 557270], "revenue_delta_pct": [null, null, null, null, null, -100, -53.8]}, {"am": "Runa", "hospital_id": "2700", "hospital": "서울아이성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [24, 28, 28, 28, 28, 28, 28, 28], "impressions_delta": [-4, 0, 0, 0, 0, 0, 0], "revenue": [1505980, 1976630, 2298120, 2219650, 2247130, 2308510, 2449710, 2442040], "revenue_delta_pct": [-23.8, -14.0, 3.5, -1.2, -2.7, -5.8, 0.3]}, {"am": "Runa", "hospital_id": "2991", "hospital": "플레저성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 22, 27, 28, 28, 28, 28, 28], "impressions_delta": [-4, -5, -1, 0, 0, 0, 0], "revenue": [955040, 828150, 431970, 881190, 961960, 943540, 913030, 936950], "revenue_delta_pct": [15.3, 91.7, -51.0, -8.4, 2.0, 3.3, -2.6]}, {"am": "Runa", "hospital_id": "3084", "hospital": "아이노유성형외과의원", "tier": "1", "district": "부산", "hgroup": "정식입점", "impressions": [19, 23, 24, 26, 27, 24, 27, 27], "impressions_delta": [-4, -1, -2, -1, 3, -3, 0], "revenue": [41450, 48140, 59090, 51440, 57880, 78880, 65170, 60140], "revenue_delta_pct": [-13.9, -18.5, 14.9, -11.1, -26.6, 21.0, 8.4]}, {"am": "Runa", "hospital_id": "3505", "hospital": "히트성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "육미병", "impressions": [12, 14, 14, 14, 14, 14, 14, 15], "impressions_delta": [-2, 0, 0, 0, 0, 0, -1], "revenue": [6052100, 6871360, 5976320, 7070030, 7092080, 7090030, 6481850, 7491480], "revenue_delta_pct": [-11.9, 15.0, -15.5, -0.3, 0.0, 9.4, -13.5]}, {"am": "Runa", "hospital_id": "3742", "hospital": "픽셀랩성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "육미병", "impressions": [7, 8, 10, 10, 10, 10, 2, null], "impressions_delta": [-1, -2, 0, 0, 0, 8, 2], "revenue": [61290, 119200, 115630, 74190, 96540, 79680, 4710, null], "revenue_delta_pct": [-48.6, 3.1, 55.9, -23.2, 21.2, 1591.7, null]}, {"am": "Runa", "hospital_id": "4213", "hospital": "올리팅성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [24, 28, 28, 28, 28, 28, 28, 28], "impressions_delta": [-4, 0, 0, 0, 0, 0, 0], "revenue": [980890, 1199120, 1421110, 1328160, 1343950, 1413120, 1499900, 1552110], "revenue_delta_pct": [-18.2, -15.6, 7.0, -1.2, -4.9, -5.8, -3.4]}, {"am": "Runa", "hospital_id": "4508", "hospital": "우리엘의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 21, 21, 21, 21, 21, 21, 21], "impressions_delta": [-3, 0, 0, 0, 0, 0, 0], "revenue": [415730, 670780, 890970, 733800, 696550, 693610, 890910, 1022060], "revenue_delta_pct": [-38.0, -24.7, 21.4, 5.3, 0.4, -22.1, -12.8]}, {"am": "Runa", "hospital_id": "5275", "hospital": "로얄라인의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, null, null, null, 2, 7, 7, 7], "impressions_delta": [0, 0, 0, -2, -5, 0, 0], "revenue": [null, null, null, null, 97240, 363250, 359580, 360510], "revenue_delta_pct": [null, null, null, -100, -73.2, 1.0, -0.3]}, {"am": "Runa", "hospital_id": "5475", "hospital": "롤리팝성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [36, 42, 42, 42, 42, 42, 42, 42], "impressions_delta": [-6, 0, 0, 0, 0, 0, 0], "revenue": [1576950, 1785850, 1609740, 1199040, 1118130, 1330600, 1760860, 1503360], "revenue_delta_pct": [-11.7, 10.9, 34.3, 7.2, -16.0, -24.4, 17.1]}, {"am": "Runa", "hospital_id": "5525", "hospital": "청담마이의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [41, 49, 49, 48, 49, 49, 49, 49], "impressions_delta": [-8, 0, 1, -1, 0, 0, 0], "revenue": [450370, 599880, 661350, 636260, 648880, 684880, 789030, 783070], "revenue_delta_pct": [-24.9, -9.3, 3.9, -1.9, -5.3, -13.2, 0.8]}, {"am": "Runa", "hospital_id": "6754", "hospital": "미미썸의원-부산덕천점", "tier": "2", "district": "부산", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [17050, 21450, 28600, 32450, 28050, 38500, 46750, 46750], "revenue_delta_pct": [-20.5, -25.0, -11.9, 15.7, -27.1, -17.6, 0]}, {"am": "Runa", "hospital_id": "7461", "hospital": "비티큐의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [12, 18, 29, 38, 38, 42, 26, 14], "impressions_delta": [-6, -11, -9, 0, -4, 16, 12], "revenue": [740040, 758460, 730160, 861950, 1165270, 2235070, 1410460, 1112740], "revenue_delta_pct": [-2.4, 3.9, -15.3, -26.0, -47.9, 58.5, 26.8]}, {"am": "Runa", "hospital_id": "7635", "hospital": "라이즈성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [11, 14, 12, 11, 14, 11, 7, 7], "impressions_delta": [-3, 2, 1, -3, 3, 4, 0], "revenue": [304890, 239530, 194540, 189800, 187890, 214560, 174840, 179310], "revenue_delta_pct": [27.3, 23.1, 2.5, 1.0, -12.4, 22.7, -2.5]}, {"am": "Runa", "hospital_id": "7657", "hospital": "새로운성형외과의원", "tier": "2", "district": "부산", "hgroup": "정식입점", "impressions": [48, 56, 56, 56, 52, 49, 49, 49], "impressions_delta": [-8, 0, 0, 4, 3, 0, 0], "revenue": [77550, 82500, 105050, 122100, 124850, 111100, 96800, 108900], "revenue_delta_pct": [-6.0, -21.5, -14.0, -2.2, 12.4, 14.8, -11.1]}, {"am": "Runa", "hospital_id": "7685", "hospital": "리프트리성형외과의원", "tier": "2", "district": "부산", "hgroup": "정식입점", "impressions": [48, 56, 58, 57, null, null, null, null], "impressions_delta": [-8, -2, 1, 57, 0, 0, 0], "revenue": [431630, 543850, 513710, 487570, null, null, null, null], "revenue_delta_pct": [-20.6, 5.9, 5.4, null, null, null, null]}, {"am": "Runa", "hospital_id": "8131", "hospital": "더나의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [15, 7, 14, 15, 14, 15, 14, 14], "impressions_delta": [8, -7, -1, 1, -1, 1, 0], "revenue": [523500, 309630, 430420, 607830, 641950, 598560, 987120, 1055400], "revenue_delta_pct": [69.1, -28.1, -29.2, -5.3, 7.2, -39.4, -6.5]}, {"am": "Runa", "hospital_id": "8341", "hospital": "모린의원-부산서면점", "tier": "2", "district": "부산", "hgroup": "정식입점", "impressions": [null, null, 1, null, null, 14, 21, 4], "impressions_delta": [0, -1, 1, 0, -14, -7, 17], "revenue": [null, null, 22550, null, null, 214500, 251350, 1100], "revenue_delta_pct": [null, -100, null, null, -100, -14.7, 22750.0]}, {"am": "Ryan", "hospital_id": "8058", "hospital": "리제로의원", "tier": "2", "district": "부산", "hgroup": "정식입점", "impressions": [6, 7, null, null, null, null, null, null], "impressions_delta": [-1, 7, 0, 0, 0, 0, 0], "revenue": [110000, 101200, null, null, null, null, null, null], "revenue_delta_pct": [8.7, null, null, null, null, null, null]}, {"am": "Ryan", "hospital_id": "8126", "hospital": "압구정리앤스타의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [16, 14, 12, null, 8, 13, 5, null], "impressions_delta": [2, 2, 12, -8, -5, 8, 5], "revenue": [406780, 500040, 386170, null, 209470, 360770, 81610, null], "revenue_delta_pct": [-18.7, 29.5, null, -100, -41.9, 342.1, null]}, {"am": "Winnie", "hospital_id": "46", "hospital": "플라덴성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 11, 14, 14, 19, 27, 22], "impressions_delta": [-1, -4, -3, 0, -5, -8, 5], "revenue": [16790, 15780, 488300, 143620, 52430, 289560, 0, 15860], "revenue_delta_pct": [6.4, -96.8, 240.0, 173.9, -81.9, null, -100]}, {"am": "Winnie", "hospital_id": "54", "hospital": "글로비성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, null, null, 4, 6, 7, null, null], "impressions_delta": [0, 0, -4, -2, -1, 7, 0], "revenue": [null, null, null, 90600, 337870, 379260, null, null], "revenue_delta_pct": [null, null, -100, -73.2, -10.9, null, null]}, {"am": "Winnie", "hospital_id": "129", "hospital": "압구정탑라인의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [12, 16, 21, 14, 7, null, null, null], "impressions_delta": [-4, -5, 7, 7, 7, 0, 0], "revenue": [721040, 835790, 880480, 822170, 324070, null, null, null], "revenue_delta_pct": [-13.7, -5.1, 7.1, 153.7, null, null, null]}, {"am": "Winnie", "hospital_id": "226", "hospital": "쿠키성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [15100, 19950, 19820, 12710, 24030, 41640, 28390, 42460], "revenue_delta_pct": [-24.3, 0.7, 55.9, -47.1, -42.3, 46.7, -33.1]}, {"am": "Winnie", "hospital_id": "239", "hospital": "연세리즈의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [42, 49, 49, 49, 49, 49, 49, 49], "impressions_delta": [-7, 0, 0, 0, 0, 0, 0], "revenue": [1101170, 1069600, 1016000, 1215950, 1152380, 1282040, 1192210, 1707730], "revenue_delta_pct": [3.0, 5.3, -16.4, 5.5, -10.1, 7.5, -30.2]}, {"am": "Winnie", "hospital_id": "300", "hospital": "에이탑성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [63, 77, 79, 86, 94, 98, 98, 98], "impressions_delta": [-14, -2, -7, -8, -4, 0, 0], "revenue": [3411860, 4493020, 4489720, 4925560, 6081720, 6798850, 6720430, 7207880], "revenue_delta_pct": [-24.1, 0.1, -8.8, -19.0, -10.5, 1.2, -6.8]}, {"am": "Winnie", "hospital_id": "320", "hospital": "에르네의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, null, 0, null, null, null, null, null], "impressions_delta": [0, 0, 0, 0, 0, 0, 0], "revenue": [null, null, 0, null, null, null, null, null], "revenue_delta_pct": [null, null, null, null, null, null, null]}, {"am": "Winnie", "hospital_id": "355", "hospital": "모래시계의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [3, 9, 21, 21, 21, 17, 14, 14], "impressions_delta": [-6, -12, 0, 0, 4, 3, 0], "revenue": [303280, 346220, 1241870, 1198630, 1144530, 772640, 689070, 704710], "revenue_delta_pct": [-12.4, -72.1, 3.6, 4.7, 48.1, 12.1, -2.2]}, {"am": "Winnie", "hospital_id": "377", "hospital": "리버스의원-강남점", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [30, 25, 35, 29, 21, 25, 35, 35], "impressions_delta": [5, -10, 6, 8, -4, -10, 0], "revenue": [213590, 181750, 250530, 204340, 179080, 189470, 223450, 252550], "revenue_delta_pct": [17.5, -27.5, 22.6, 14.1, -5.5, -15.2, -11.5]}, {"am": "Winnie", "hospital_id": "379", "hospital": "리버스의원-인천점", "tier": "1", "district": "인천", "hgroup": "정식입점", "impressions": [50, 61, 63, 60, 59, 63, 63, 61], "impressions_delta": [-11, -2, 3, 1, -4, 0, 2], "revenue": [152000, 152540, 182630, 165660, 143550, 164530, 194320, 189870], "revenue_delta_pct": [-0.4, -16.5, 10.2, 15.4, -12.8, -15.3, 2.3]}, {"am": "Winnie", "hospital_id": "431", "hospital": "PR성형외과(피알성형외과)", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [1, 2, null, 1, 3, 1, 4, 3], "impressions_delta": [-1, 2, -1, -2, 2, -3, 1], "revenue": [970, 1560, null, 920, 2850, 940, 4100, 5320], "revenue_delta_pct": [-37.8, null, -100, -67.7, 203.2, -77.1, -22.9]}, {"am": "Winnie", "hospital_id": "542", "hospital": "바탕성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 9, 7, 10, 28, 43, 30], "impressions_delta": [-1, -2, 2, -3, -18, -15, 13], "revenue": [514300, 674770, 709090, 600780, 553990, 1331010, 2413390, 1740460], "revenue_delta_pct": [-23.8, -4.8, 18.0, 8.4, -58.4, -44.8, 38.7]}, {"am": "Winnie", "hospital_id": "611", "hospital": "브이성형외과의원", "tier": "1", "district": "대구", "hgroup": "정식입점", "impressions": [42, 48, 49, 48, 29, 18, null, null], "impressions_delta": [-6, -1, 1, 19, 11, 18, 0], "revenue": [173160, 124240, 146350, 124460, 77150, 11410, null, null], "revenue_delta_pct": [39.4, -15.1, 17.6, 61.3, 576.2, null, null]}, {"am": "Winnie", "hospital_id": "660", "hospital": "루호성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [14, 11, 14, 13, 21, 18, 14, 12], "impressions_delta": [3, -3, 1, -8, 3, 4, 2], "revenue": [2783340, 1981840, 2813290, 2273320, 4451760, 3616120, 2397590, 968020], "revenue_delta_pct": [40.4, -29.6, 23.8, -48.9, 23.1, 50.8, 147.7]}, {"am": "Winnie", "hospital_id": "678", "hospital": "볼륨성형외과", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 21, 21, 21, 21, 21, 21, 21], "impressions_delta": [-3, 0, 0, 0, 0, 0, 0], "revenue": [107270, 69080, 33900, 50160, 58740, 60280, 60220, 70340], "revenue_delta_pct": [55.3, 103.8, -32.4, -14.6, -2.6, 0.1, -14.4]}, {"am": "Winnie", "hospital_id": "794", "hospital": "한나이브성형외과의원", "tier": "1", "district": "경기", "hgroup": "정식입점", "impressions": [6, 7, 7, 5, 2, 1, 7, 7], "impressions_delta": [-1, 0, 2, 3, 1, -6, 0], "revenue": [308560, 279200, 1072520, 616560, 349720, 57300, 1584240, 1487090], "revenue_delta_pct": [10.5, -74.0, 74.0, 76.3, 510.3, -96.4, 6.5]}, {"am": "Winnie", "hospital_id": "938", "hospital": "나나성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [40, 49, 49, 50, 56, 56, 56, 60], "impressions_delta": [-9, 0, -1, -6, 0, 0, -4], "revenue": [11075910, 12908510, 13140630, 15365050, 15897990, 15228600, 13693940, 13583610], "revenue_delta_pct": [-14.2, -1.8, -14.5, -3.4, 4.4, 11.2, 0.8]}, {"am": "Winnie", "hospital_id": "2296", "hospital": "리버스의원-일산점", "tier": "1", "district": "경기", "hgroup": "정식입점", "impressions": [42, 48, 52, 54, 49, 51, 53, 57], "impressions_delta": [-6, -4, -2, 5, -2, -2, -4], "revenue": [105570, 131630, 101080, 133480, 85440, 133720, 121320, 139140], "revenue_delta_pct": [-19.8, 30.2, -24.3, 56.2, -36.1, 10.2, -12.8]}, {"am": "Winnie", "hospital_id": "3090", "hospital": "플래너성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "육미병", "impressions": [57, 65, 63, 63, 64, 70, 69, 70], "impressions_delta": [-8, 2, 0, -1, -6, 1, -1], "revenue": [242650, 178900, 127610, 119920, 157570, 166020, 188110, 198500], "revenue_delta_pct": [35.6, 40.2, 6.4, -23.9, -5.1, -11.7, -5.2]}, {"am": "Winnie", "hospital_id": "3170", "hospital": "신상성형외과의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [4, 4, 1, null, 10, 14, 14, 14], "impressions_delta": [0, 3, 1, -10, -4, 0, 0], "revenue": [9020, 13490, 2980, null, 1480340, 2367830, 2184160, 1756820], "revenue_delta_pct": [-33.1, 352.7, null, -100, -37.5, 8.4, 24.3]}, {"am": "Winnie", "hospital_id": "3395", "hospital": "아너스티성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [61, 71, 67, 58, 58, 61, 61, 59], "impressions_delta": [-10, 4, 9, 0, -3, 0, 2], "revenue": [610210, 703750, 801190, 661590, 792620, 770060, 836490, 825990], "revenue_delta_pct": [-13.3, -12.2, 21.1, -16.5, 2.9, -7.9, 1.3]}, {"am": "Winnie", "hospital_id": "4216", "hospital": "투비성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, null, null, null, null, null, null, null], "impressions_delta": [6, 0, 0, 0, 0, 0, 0], "revenue": [89960, null, null, null, null, null, null, null], "revenue_delta_pct": [null, null, null, null, null, null, null]}, {"am": "Winnie", "hospital_id": "4486", "hospital": "심포니성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [54, 63, 63, 63, 63, 63, 63, 63], "impressions_delta": [-9, 0, 0, 0, 0, 0, 0], "revenue": [285310, 282130, 308320, 292520, 348530, 282180, 342040, 378270], "revenue_delta_pct": [1.1, -8.5, 5.4, -16.1, 23.5, -17.5, -9.6]}, {"am": "Winnie", "hospital_id": "4493", "hospital": "글로비지테라안티에이징의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, null, null, 1, 1, null, null, null], "impressions_delta": [0, 0, -1, 0, 1, 0, 0], "revenue": [null, null, null, 48180, 2940, null, null, null], "revenue_delta_pct": [null, null, -100, 1538.8, null, null, null]}, {"am": "Winnie", "hospital_id": "4919", "hospital": "하이린의원", "tier": "2", "district": "대구", "hgroup": "정식입점", "impressions": [null, null, null, null, null, null, 25, 35], "impressions_delta": [0, 0, 0, 0, 0, -25, -10], "revenue": [null, null, null, null, null, null, 140250, 229900], "revenue_delta_pct": [null, null, null, null, null, -100, -39.0]}, {"am": "Winnie", "hospital_id": "4924", "hospital": "사적인아름다움지유의원-일산점", "tier": "1", "district": "경기", "hgroup": "정식입점", "impressions": [32, 35, 35, 35, 35, 36, 32, 26], "impressions_delta": [-3, 0, 0, 0, -1, 4, 6], "revenue": [118310, 184860, 234880, 389360, 589930, 788630, 597850, 540010], "revenue_delta_pct": [-36.0, -21.3, -39.7, -34.0, -25.2, 31.9, 10.7]}, {"am": "Winnie", "hospital_id": "5225", "hospital": "세라의원", "tier": "2", "district": "경기", "hgroup": "정식입점", "impressions": [23, 28, 28, 28, 28, 28, 28, 28], "impressions_delta": [-5, 0, 0, 0, 0, 0, 0], "revenue": [145410, 321080, 283820, 342950, 268400, 302290, 227060, 396780], "revenue_delta_pct": [-54.7, 13.1, -17.2, 27.8, -11.2, 33.1, -42.8]}, {"am": "Winnie", "hospital_id": "5801", "hospital": "멘토의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [44650, 41960, 39470, 25800, 23730, 37310, 31490, 44720], "revenue_delta_pct": [6.4, 6.3, 53.0, 8.7, -36.4, 18.5, -29.6]}, {"am": "Winnie", "hospital_id": "6010", "hospital": "엔디어트의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [207770, 241180, 200910, 155140, 129110, 132270, 178190, 249230], "revenue_delta_pct": [-13.9, 20.0, 29.5, 20.2, -2.4, -25.8, -28.5]}, {"am": "Winnie", "hospital_id": "6584", "hospital": "플래티넘의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [63, 71, 73, 68, 70, 71, 69, 73], "impressions_delta": [-8, -2, 5, -2, -1, 2, -4], "revenue": [1355290, 1384220, 1385960, 1527520, 1413480, 1258210, 1804820, 1906000], "revenue_delta_pct": [-2.1, -0.1, -9.3, 8.1, 12.3, -30.3, -5.3]}, {"am": "Winnie", "hospital_id": "6712", "hospital": "필앤필의원", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [6, 7, 7, 6, 5, 7, 7, 7], "impressions_delta": [-1, 0, 1, 1, -2, 0, 0], "revenue": [36920, 45690, 34120, 20360, 12100, 35760, 60530, 65460], "revenue_delta_pct": [-19.2, 33.9, 67.6, 68.3, -66.2, -40.9, -7.5]}, {"am": "Winnie", "hospital_id": "6722", "hospital": "드라마성형외과의원", "tier": "2", "district": "강남서초", "hgroup": "정식입점", "impressions": [null, 2, 6, 3, 7, 7, 7, 4], "impressions_delta": [-2, -4, 3, -4, 0, 0, 3], "revenue": [null, 105230, 429120, 228790, 529790, 529170, 385700, 200770], "revenue_delta_pct": [-100, -75.5, 87.6, -56.8, 0.1, 37.2, 92.1]}, {"am": "Winnie", "hospital_id": "6965", "hospital": "동탄스노우의원", "tier": "2", "district": "경기", "hgroup": "정식입점", "impressions": [6, 7, 7, 7, 7, 7, 7, 7], "impressions_delta": [-1, 0, 0, 0, 0, 0, 0], "revenue": [51940, 40950, 25130, 21880, 23000, 26880, 32330, 38360], "revenue_delta_pct": [26.8, 63.0, 14.9, -4.9, -14.4, -16.9, -15.7]}, {"am": "Winnie", "hospital_id": "7493", "hospital": "테이아의원-강남본점", "tier": "1", "district": "강남서초", "hgroup": "정식입점", "impressions": [18, 19, 15, 20, 14, 18, 3, null], "impressions_delta": [-1, 4, -5, 6, -4, 15, 3], "revenue": [6866600, 7667030, 6143680, 6799940, 6445140, 5316270, 484300, null], "revenue_delta_pct": [-10.4, 24.8, -9.7, 5.5, 21.2, 997.7, null]}], "grand_total": {"impressions": [2731, 3159, 3236, 3167, 3071, 3126, 3057, 2980], "impressions_delta": [-428, -77, 69, 96, -55, 69, 77], "revenue": [108546091, 124367310, 126298580, 124630660, 125229300, 134078330, 136249170, 132682030], "revenue_delta_pct": [-12.7, -1.5, 1.3, -0.5, -6.6, -1.6, 2.7]}};
+let weeks = DATA.weeks; // index0 = newest (7/20) ... index7 = oldest (6/1)
+let hospitals = DATA.hospitals;
+hospitals.forEach(h=>{ h.uid = h.am + '||' + h.hospital_id; });
+let hospitalByUid = Object.fromEntries(hospitals.map(h=>[h.uid, h]));
+
+function shortDate(w){ return String(w).replace('2026. ','').replace(/\.\s*$/,'').replace('. ','/'); }
+
+const CHART_COLORS = ['#3ddcc0','#f0a13c','#e8604f','#8fa5ff','#e07fd0','#5fd68a','#f0d75f','#7fb8e0'];
+
+let state = {
+  am: null,
+  tier: '',
+  district: '',
+  search: '',
+  view: 'actual', // 'actual' | 'wow'
+  sortKey: 'wk0-rev',
+  sortDir: 'desc',
+  chartMetric: 'revenue',
+  selected: [], // array of uid, in add order (comparison chart)
+  excluded: [] // array of uid, hospitals excluded from table + chart entirely
+};
+
+let AM_ORDER = [...new Set(hospitals.map(h=>h.am))].sort();
+
+/* ---------------- live refresh from Vercel serverless function ---------------- */
+
+async function refreshData(){
+  const btn = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  const statusEl = document.getElementById('lastUpdated');
+
+  btn.disabled = true;
+  icon.style.animation = 'spin 0.8s linear infinite';
+  statusEl.textContent = '불러오는 중...';
+  statusEl.style.color = 'var(--text-faint)';
+
+  try{
+    const res = await fetch(REFRESH_URL, {cache:'no-store'});
+    const fresh = await res.json();
+    if(!res.ok){
+      throw new Error(fresh && fresh.error ? fresh.error : ('HTTP ' + res.status));
+    }
+    if(!fresh.hospitals || fresh.hospitals.length===0){
+      throw new Error('데이터를 찾지 못했어요');
+    }
+
+    DATA = fresh;
+    weeks = DATA.weeks;
+    hospitals = DATA.hospitals;
+    hospitals.forEach(h=>{ h.uid = h.am + '||' + h.hospital_id; });
+    hospitalByUid = Object.fromEntries(hospitals.map(h=>[h.uid, h]));
+    AM_ORDER = [...new Set(hospitals.map(h=>h.am))].sort();
+
+    state.selected = state.selected.filter(uid=>hospitalByUid[uid]);
+    state.excluded = state.excluded.filter(uid=>hospitalByUid[uid]);
+
+    buildFilterOptions();
+    renderExcludeChips();
+    render();
+    renderChartSection();
+
+    const ts = DATA.updated_at ? new Date(DATA.updated_at) : new Date();
+    statusEl.textContent = '마지막 업데이트: ' + ts.toLocaleString('ko-KR', {month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'});
+    statusEl.style.color = 'var(--text-faint)';
+  } catch(err){
+    statusEl.textContent = '불러오기 실패: ' + err.message + ' (Vercel에 배포된 상태에서만 동작해요)';
+    statusEl.style.color = 'var(--red)';
+  } finally {
+    btn.disabled = false;
+    icon.style.animation = '';
+  }
+}
+
+document.getElementById('refreshBtn').onclick = refreshData;
+
+function fmtNum(n){ return (n===null||n===undefined) ? '–' : n.toLocaleString('ko-KR'); }
+function fmtWon(n){ return (n===null||n===undefined) ? '–' : '₩'+n.toLocaleString('ko-KR'); }
+function fmtWonShort(n){
+  if(n===null||n===undefined) return '–';
+  if(Math.abs(n)>=100000000) return (n/100000000).toFixed(1)+'억';
+  if(Math.abs(n)>=10000) return (n/10000).toFixed(0)+'만';
+  return n.toLocaleString('ko-KR');
+}
+function pctChange(a,b){
+  if(a===null||a===undefined||b===null||b===undefined||b===0) return null;
+  return ((a-b)/b)*100;
+}
+
+/* ---------------- AM / filter controls ---------------- */
+
+function buildAmPills(){
+  const wrap = document.getElementById('amPills');
+  wrap.innerHTML='';
+  const allPill = document.createElement('div');
+  allPill.className = 'pill' + (state.am===null ? ' active':'');
+  allPill.textContent = '전체';
+  allPill.onclick = ()=>{ state.am=null; render(); };
+  wrap.appendChild(allPill);
+  AM_ORDER.forEach(am=>{
+    const p = document.createElement('div');
+    p.className = 'pill' + (state.am===am ? ' active':'');
+    p.textContent = am;
+    p.onclick = ()=>{ state.am = (state.am===am? null: am); render(); };
+    wrap.appendChild(p);
+  });
+}
+
+function buildFilterOptions(){
+  const tierSel = document.getElementById('tierSelect');
+  const distSel = document.getElementById('districtSelect');
+  const tiers = [...new Set(hospitals.map(h=>h.tier))].sort();
+  const districts = [...new Set(hospitals.map(h=>h.district))].sort();
+  tierSel.innerHTML = '<option value="">전체</option>' + tiers.map(t=>`<option value="${t}">Tier ${t}</option>`).join('');
+  distSel.innerHTML = '<option value="">전체</option>' + districts.map(d=>`<option value="${d}">${d}</option>`).join('');
+  tierSel.onchange = e=>{ state.tier = e.target.value; render(); };
+  distSel.onchange = e=>{ state.district = e.target.value; render(); };
+}
+
+document.getElementById('searchInput').addEventListener('input', e=>{
+  state.search = e.target.value.trim().toLowerCase();
+  render();
+});
+document.getElementById('tabActual').onclick = ()=>{ state.view='actual'; state.sortKey='wk0-rev'; state.sortDir='desc'; syncTabs(); render(); };
+document.getElementById('tabWow').onclick = ()=>{ state.view='wow'; state.sortKey='wk0-rev'; state.sortDir='desc'; syncTabs(); render(); };
+document.getElementById('tabByAM').onclick = ()=>{ state.view='byam'; syncTabs(); render(); };
+document.getElementById('tabTotal').onclick = ()=>{ state.view='total'; syncTabs(); render(); };
+function syncTabs(){
+  document.getElementById('tabActual').classList.toggle('active', state.view==='actual');
+  document.getElementById('tabWow').classList.toggle('active', state.view==='wow');
+  document.getElementById('tabByAM').classList.toggle('active', state.view==='byam');
+  document.getElementById('tabTotal').classList.toggle('active', state.view==='total');
+}
+
+function getFiltered(){
+  return hospitals.filter(h=>{
+    if(state.excluded.includes(h.uid)) return false;
+    if(state.am && h.am !== state.am) return false;
+    if(state.tier && h.tier !== state.tier) return false;
+    if(state.district && h.district !== state.district) return false;
+    if(state.search && !h.hospital.toLowerCase().includes(state.search)) return false;
+    return true;
+  });
+}
+
+/* ---------------- exclude hospitals ---------------- */
+
+function addToExcluded(uid){
+  if(state.excluded.includes(uid)) return;
+  state.excluded.push(uid);
+  // also drop from comparison selection if present there
+  state.selected = state.selected.filter(u=>u!==uid);
+  renderExcludeChips();
+  renderChartSection();
+  render();
+}
+function removeFromExcluded(uid){
+  state.excluded = state.excluded.filter(u=>u!==uid);
+  renderExcludeChips();
+  render();
+}
+
+function renderExcludeChips(){
+  const wrap = document.getElementById('excludeChipRow');
+  if(state.excluded.length===0){ wrap.innerHTML=''; return; }
+  wrap.innerHTML = `<span style="font-size:11px; color:var(--text-faint); align-self:center; margin-right:2px;">제외됨:</span>` +
+    state.excluded.map(uid=>{
+      const h = hospitalByUid[uid];
+      if(!h) return '';
+      return `<div class="chip">
+        <span>${h.hospital} <span style="color:var(--text-faint)">(${h.am})</span></span>
+        <span class="chip-x" data-uid="${uid}">×</span>
+      </div>`;
+    }).join('');
+  [...wrap.querySelectorAll('.chip-x')].forEach(el=>{
+    el.onclick = ()=> removeFromExcluded(el.dataset.uid);
+  });
+}
+
+const excludeInput = document.getElementById('excludeInput');
+const excludeDropdown = document.getElementById('excludeDropdown');
+excludeInput.addEventListener('input', ()=>{
+  const q = excludeInput.value.trim().toLowerCase();
+  if(!q){ excludeDropdown.style.display='none'; return; }
+  const matches = hospitals.filter(h=> h.hospital.toLowerCase().includes(q) && !state.excluded.includes(h.uid)).slice(0,10);
+  if(matches.length===0){
+    excludeDropdown.innerHTML = `<div class="picker-item" style="color:var(--text-faint)">검색 결과 없음</div>`;
+  } else {
+    excludeDropdown.innerHTML = matches.map(h=>`
+      <div class="picker-item" data-uid="${h.uid}">
+        <span>${h.hospital}</span><span class="pi-am">${h.am} · T${h.tier}</span>
+      </div>`).join('');
+  }
+  excludeDropdown.style.display = 'block';
+  [...excludeDropdown.querySelectorAll('.picker-item[data-uid]')].forEach(el=>{
+    el.onclick = ()=>{
+      addToExcluded(el.dataset.uid);
+      excludeInput.value='';
+      excludeDropdown.style.display='none';
+    };
+  });
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('#excludeInput') && !e.target.closest('#excludeDropdown')){ excludeDropdown.style.display='none'; }
+});
+
+/* ---------------- comparison chart ---------------- */
+
+function addToSelection(uid){
+  if(state.selected.includes(uid)) return;
+  if(state.selected.length >= 8) return;
+  state.selected.push(uid);
+  renderChartSection();
+}
+function removeFromSelection(uid){
+  state.selected = state.selected.filter(u=>u!==uid);
+  renderChartSection();
+}
+
+document.getElementById('chartBtnImp').onclick = ()=>{ state.chartMetric='impressions'; syncChartMetricButtons(); renderChartSection(); };
+document.getElementById('chartBtnRev').onclick = ()=>{ state.chartMetric='revenue'; syncChartMetricButtons(); renderChartSection(); };
+function syncChartMetricButtons(){
+  document.getElementById('chartBtnImp').classList.toggle('active', state.chartMetric==='impressions');
+  document.getElementById('chartBtnRev').classList.toggle('active', state.chartMetric==='revenue');
+}
+
+document.getElementById('quickTop5').onclick = ()=>{
+  const pool = getFiltered();
+  const sortedByLatest = pool.slice().sort((a,b)=> (b[state.chartMetric][0]??0) - (a[state.chartMetric][0]??0));
+  state.selected = sortedByLatest.slice(0,5).map(h=>h.uid);
+  renderChartSection();
+};
+
+const pickerInput = document.getElementById('pickerInput');
+const pickerDropdown = document.getElementById('pickerDropdown');
+pickerInput.addEventListener('input', ()=>{
+  const q = pickerInput.value.trim().toLowerCase();
+  if(!q){ pickerDropdown.style.display='none'; return; }
+  const matches = hospitals.filter(h=>h.hospital.toLowerCase().includes(q) && !state.excluded.includes(h.uid)).slice(0,10);
+  if(matches.length===0){
+    pickerDropdown.innerHTML = `<div class="picker-item" style="color:var(--text-faint)">검색 결과 없음</div>`;
+  } else {
+    pickerDropdown.innerHTML = matches.map(h=>`
+      <div class="picker-item" data-uid="${h.uid}">
+        <span>${h.hospital}</span><span class="pi-am">${h.am} · T${h.tier}</span>
+      </div>`).join('');
+  }
+  pickerDropdown.style.display = 'block';
+  [...pickerDropdown.querySelectorAll('.picker-item[data-uid]')].forEach(el=>{
+    el.onclick = ()=>{
+      addToSelection(el.dataset.uid);
+      pickerInput.value='';
+      pickerDropdown.style.display='none';
+    };
+  });
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.picker-wrap')){ pickerDropdown.style.display='none'; }
+});
+
+function renderChips(){
+  const wrap = document.getElementById('chipRow');
+  if(state.selected.length===0){
+    wrap.innerHTML = `<div class="chip-empty">아직 선택한 병원이 없어요. 검색하거나 "상위 5개 병원 담기"를 눌러보세요.</div>`;
+    return;
+  }
+  wrap.innerHTML = state.selected.map((uid, i)=>{
+    const h = hospitalByUid[uid];
+    if(!h) return '';
+    const color = CHART_COLORS[i % CHART_COLORS.length];
+    return `<div class="chip">
+      <span class="dot" style="background:${color}"></span>
+      <span>${h.hospital} <span style="color:var(--text-faint)">(${h.am})</span></span>
+      <span class="chip-x" data-uid="${uid}">×</span>
+    </div>`;
+  }).join('');
+  [...wrap.querySelectorAll('.chip-x')].forEach(el=>{
+    el.onclick = ()=> removeFromSelection(el.dataset.uid);
+  });
+}
+
+function buildChartSvg(){
+  const wrap = document.getElementById('chartWrap');
+  const metric = state.chartMetric;
+  const fmt = metric==='revenue' ? fmtWonShort : fmtNum;
+  const fmtFull = metric==='revenue' ? fmtWon : fmtNum;
+
+  if(state.selected.length===0){
+    wrap.innerHTML = `<div style="padding:50px 0; text-align:center; color:var(--text-faint); font-size:13px;">비교할 병원을 선택하면 여기에 추이 그래프가 표시돼요.</div>`;
+    return;
+  }
+
+  const seriesList = state.selected.map((uid,i)=>{
+    const h = hospitalByUid[uid];
+    const valsNewestFirst = h[metric];
+    const vals = [...valsNewestFirst].reverse(); // oldest -> newest
+    return { uid, label: h.hospital, am: h.am, color: CHART_COLORS[i % CHART_COLORS.length], vals };
+  });
+
+  const W = 1080, H = 340;
+  const padL = 56, padR = 24, padT = 20, padB = 34;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+
+  let allVals = [];
+  seriesList.forEach(s=> s.vals.forEach(v=>{ if(v!==null && v!==undefined) allVals.push(v); }));
+  let maxV = Math.max(...allVals, 1);
+  maxV = maxV * 1.12;
+
+  const n = weeks.length;
+  const xStep = plotW / (n-1);
+  const yScale = v => padT + plotH - (v/maxV)*plotH;
+  const xScale = i => padL + i*xStep;
+  const xLabelsArr = weeksAscLabels();
+
+  const gridCount = 4;
+  let gridLines = '';
+  let yLabels = '';
+  for(let g=0; g<=gridCount; g++){
+    const v = (maxV/gridCount)*g;
+    const y = yScale(v);
+    gridLines += `<line class="grid-line" x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}"/>`;
+    yLabels += `<text class="axis-label" x="${padL-8}" y="${y+3}" text-anchor="end">${fmt(Math.round(v))}</text>`;
+  }
+
+  let xLabels = '';
+  xLabelsArr.forEach((lbl,i)=>{
+    xLabels += `<text class="axis-label" x="${xScale(i)}" y="${H-10}" text-anchor="middle">${lbl}</text>`;
+  });
+
+  let paths = '';
+  let dots = '';
+  seriesList.forEach(s=>{
+    let d = '';
+    s.vals.forEach((v,i)=>{
+      if(v===null||v===undefined) return;
+      const x = xScale(i), y = yScale(v);
+      d += (d==='' ? 'M':'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    });
+    paths += `<path class="series-line" d="${d.trim()}" stroke="${s.color}"/>`;
+    s.vals.forEach((v,i)=>{
+      if(v===null||v===undefined) return;
+      const x = xScale(i), y = yScale(v);
+      dots += `<circle class="series-dot" cx="${x}" cy="${y}" r="3.5" fill="${s.color}"><title>${s.label} · ${xLabelsArr[i]} · ${fmtFull(v)}</title></circle>`;
+    });
+  });
+
+  // hover indicator: vertical guide line + one highlight dot per series
+  let hoverDots = seriesList.map(s=>
+    `<circle class="hover-dot" data-uid="${s.uid}" r="5" fill="${s.color}"></circle>`
+  ).join('');
+
+  const svg = `
+  <svg class="chart" id="chartSvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    ${gridLines}
+    ${yLabels}
+    ${xLabels}
+    ${paths}
+    ${dots}
+    <line class="hover-line" id="hoverLine" x1="0" y1="${padT}" x2="0" y2="${H-padB}"/>
+    ${hoverDots}
+    <rect class="hover-rect" id="hoverRect" x="${padL}" y="${padT}" width="${plotW}" height="${plotH}"/>
+  </svg>
+  <div class="chart-tooltip" id="chartTooltip"></div>`;
+
+  wrap.innerHTML = svg;
+
+  // ---- interactive hover ----
+  const svgEl = document.getElementById('chartSvg');
+  const hoverRect = document.getElementById('hoverRect');
+  const hoverLine = document.getElementById('hoverLine');
+  const tooltip = document.getElementById('chartTooltip');
+  const hoverDotEls = {};
+  seriesList.forEach(s=>{ hoverDotEls[s.uid] = svgEl.querySelector(`.hover-dot[data-uid="${s.uid}"]`); });
+
+  function svgPoint(evt){
+    const rect = svgEl.getBoundingClientRect();
+    const scaleX = W / rect.width;
+    return (evt.clientX - rect.left) * scaleX;
+  }
+
+  function showAt(idx, clientX, clientY){
+    idx = Math.max(0, Math.min(n-1, idx));
+    const x = xScale(idx);
+    hoverLine.setAttribute('x1', x);
+    hoverLine.setAttribute('x2', x);
+    hoverLine.style.opacity = 1;
+
+    let rows = '';
+    seriesList.forEach(s=>{
+      const v = s.vals[idx];
+      const dotEl = hoverDotEls[s.uid];
+      if(v===null||v===undefined){
+        dotEl.style.opacity = 0;
+      } else {
+        dotEl.setAttribute('cx', x);
+        dotEl.setAttribute('cy', yScale(v));
+        dotEl.style.opacity = 1;
+      }
+      rows += `<div class="tt-row">
+        <span class="tt-name"><span class="tt-dot" style="background:${s.color}"></span>${s.label}</span>
+        <span class="tt-val">${fmtFull(v)}</span>
+      </div>`;
+    });
+
+    tooltip.innerHTML = `<div class="tt-date">${xLabelsArr[idx]}</div>${rows}`;
+    tooltip.style.opacity = 1;
+
+    const wrapRect = wrap.getBoundingClientRect();
+    let left = clientX - wrapRect.left + 14;
+    let top = clientY - wrapRect.top - 10;
+    const ttW = tooltip.offsetWidth, ttH = tooltip.offsetHeight;
+    if(left + ttW > wrapRect.width) left = clientX - wrapRect.left - ttW - 14;
+    if(top + ttH > wrapRect.height) top = wrapRect.height - ttH - 4;
+    if(top < 0) top = 4;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+
+  function hideHover(){
+    hoverLine.style.opacity = 0;
+    tooltip.style.opacity = 0;
+    Object.values(hoverDotEls).forEach(el=> el.style.opacity = 0);
+  }
+
+  hoverRect.addEventListener('mousemove', (evt)=>{
+    const xSvg = svgPoint(evt);
+    const idx = Math.round((xSvg - padL) / xStep);
+    showAt(idx, evt.clientX, evt.clientY);
+  });
+  hoverRect.addEventListener('mouseleave', hideHover);
+}
+
+function weeksAscLabels(){
+  return [...weeks].reverse().map(shortDate);
+}
+
+function renderChartSection(){
+  renderChips();
+  buildChartSvg();
+}
+
+/* ---------------- sorting ---------------- */
+
+function sortRows(rows){
+  const key = state.sortKey;
+  const dir = state.sortDir === 'asc' ? 1 : -1;
+
+  rows.sort((a,b)=>{
+    if(key==='hospital') return dir * a.hospital.localeCompare(b.hospital, 'ko');
+    if(key==='am') return dir * a.am.localeCompare(b.am, 'ko');
+
+    const m = key.match(/^wk(\d+)-(imp|rev)(wow)?$/);
+    if(!m) return 0;
+    const idx = parseInt(m[1]);
+    const metric = m[2] === 'imp' ? 'impressions' : 'revenue';
+    const isWow = !!m[3];
+
+    let va, vb;
+    if(isWow){
+      if(metric === 'impressions'){
+        va = a.impressions_delta ? a.impressions_delta[idx] : undefined;
+        vb = b.impressions_delta ? b.impressions_delta[idx] : undefined;
+      } else {
+        va = a.revenue_delta_pct ? a.revenue_delta_pct[idx] : undefined;
+        vb = b.revenue_delta_pct ? b.revenue_delta_pct[idx] : undefined;
+      }
+    } else {
+      va = a[metric][idx];
+      vb = b[metric][idx];
+    }
+    va = (va===null||va===undefined) ? -Infinity : va;
+    vb = (vb===null||vb===undefined) ? -Infinity : vb;
+    return dir * (va - vb);
+  });
+  return rows;
+}
+
+/* ---------------- KPIs ---------------- */
+
+function renderKPIs(rows){
+  const wrap = document.getElementById('kpiRow');
+  const sum = (metric, idx) => rows.reduce((s,h)=> s + (h[metric][idx] ?? 0), 0);
+  const impNow = sum('impressions',0), impPrev = sum('impressions',1);
+  const revNow = sum('revenue',0), revPrev = sum('revenue',1);
+  const impDelta = pctChange(impNow, impPrev);
+  const revDelta = pctChange(revNow, revPrev);
+
+  function deltaHtml(d){
+    if(d===null) return '<span class="flat">– WoW</span>';
+    const cls = d>0.05 ? 'up' : (d<-0.05 ? 'down':'flat');
+    const arrow = d>0.05 ? '▲' : (d<-0.05 ? '▼':'●');
+    return `<span class="${cls}">${arrow} ${Math.abs(d).toFixed(1)}% WoW</span>`;
+  }
+
+  wrap.innerHTML = `
+    <div class="kpi impressions">
+      <div class="kpi-label">광고 집행 수 (최근주)</div>
+      <div class="kpi-value">${fmtNum(impNow)}</div>
+      <div class="kpi-delta">${deltaHtml(impDelta)}</div>
+    </div>
+    <div class="kpi revenue">
+      <div class="kpi-label">CPC 매출액 (최근주)</div>
+      <div class="kpi-value">${fmtWon(revNow)}</div>
+      <div class="kpi-delta">${deltaHtml(revDelta)}</div>
+    </div>
+    <div class="kpi count">
+      <div class="kpi-label">대상 병원 수</div>
+      <div class="kpi-value">${rows.length}</div>
+      <div class="kpi-delta flat">AM ${new Set(rows.map(r=>r.am)).size}명</div>
+    </div>
+  `;
+}
+
+/* ---------------- table head/rows ---------------- */
+
+function thHtml(key, label, extraClass){
+  const sorted = state.sortKey === key;
+  const arrow = sorted ? (state.sortDir==='asc' ? '▲':'▼') : '▲';
+  return `<th data-key="${key}" class="${sorted?'sorted':''} ${extraClass||''}">${label}<span class="arrow">${arrow}</span></th>`;
+}
+
+function renderHeadActual(){
+  const thead = document.getElementById('thead');
+  let groupRow = `<tr class="group-row"><th class="nosort left" rowspan="2">AM</th><th class="nosort left" rowspan="2">병원</th>`;
+  let subRow = `<tr>`;
+  weeks.forEach((w,i)=>{
+    groupRow += `<th colspan="2">${shortDate(w)}</th>`;
+    subRow += thHtml(`wk${i}-imp`, '광고 집행', 'metric-imp');
+    subRow += thHtml(`wk${i}-rev`, 'CPC매출', 'metric-rev');
+  });
+  groupRow += `</tr>`;
+  subRow += `</tr>`;
+  thead.innerHTML = groupRow + subRow;
+  attachHeaderSort(thead);
+}
+
+function renderHeadWow(){
+  const thead = document.getElementById('thead');
+  let groupRow = `<tr class="group-row"><th class="nosort left" rowspan="2">AM</th><th class="nosort left" rowspan="2">병원</th>`;
+  let subRow = `<tr>`;
+  for(let i=0;i<weeks.length-1;i++){
+    groupRow += `<th colspan="2">${shortDate(weeks[i])} <span style="opacity:.5">vs</span> ${shortDate(weeks[i+1])}</th>`;
+    subRow += thHtml(`wk${i}-impwow`, '광고 집행 증감', 'metric-imp');
+    subRow += thHtml(`wk${i}-revwow`, 'CPC WoW', 'metric-rev');
+  }
+  groupRow += `</tr>`;
+  subRow += `</tr>`;
+  thead.innerHTML = groupRow + subRow;
+  attachHeaderSort(thead);
+}
+
+function attachHeaderSort(thead){
+  [...thead.querySelectorAll('th[data-key]')].forEach(th=>{
+    th.onclick = ()=>{
+      const key = th.dataset.key;
+      if(state.sortKey === key){
+        state.sortDir = state.sortDir==='asc' ? 'desc':'asc';
+      } else {
+        state.sortKey = key;
+        state.sortDir = 'desc';
+      }
+      render();
+    };
+  });
+}
+
+function wowSpan(v){
+  if(v===null||v===undefined) return '<span class="flat">–</span>';
+  const cls = v>0.05?'up':(v<-0.05?'down':'flat');
+  const arrow = v>0.05?'▲':(v<-0.05?'▼':'●');
+  return `<span class="${cls}">${arrow} ${v>0?'+':''}${v.toFixed(1)}%</span>`;
+}
+
+function deltaSpan(v){
+  if(v===null||v===undefined) return '<span class="flat">–</span>';
+  const cls = v>0?'up':(v<0?'down':'flat');
+  const arrow = v>0?'▲':(v<0?'▼':'●');
+  return `<span class="${cls}">${arrow} ${v>0?'+':''}${v.toLocaleString('ko-KR')}건</span>`;
+}
+
+function renderRowsActual(rows){
+  const tbody = document.getElementById('tbody');
+  if(rows.length===0){ tbody.innerHTML = emptyRow(); return; }
+  tbody.innerHTML = rows.map(h=>{
+    let cells = '';
+    weeks.forEach((w,i)=>{
+      cells += `<td class="val-cell imp">${fmtNum(h.impressions[i])}</td>`;
+      cells += `<td class="val-cell rev">${fmtWon(h.revenue[i])}</td>`;
+    });
+    return `<tr>
+      <td class="left"><span class="am-tag">${h.am}</span></td>
+      <td class="left">
+        <div class="hospital-name clickable" data-uid="${h.uid}">${h.hospital}</div>
+        <div class="hospital-sub"><span class="tier-badge">T${h.tier}</span> ${h.district}</div>
+      </td>
+      ${cells}
+    </tr>`;
+  }).join('');
+  attachHospitalNameClicks(tbody);
+}
+
+function renderRowsWow(rows){
+  const tbody = document.getElementById('tbody');
+  if(rows.length===0){ tbody.innerHTML = emptyRow(); return; }
+  tbody.innerHTML = rows.map(h=>{
+    let cells = '';
+    for(let i=0;i<weeks.length-1;i++){
+      const impDelta = h.impressions_delta ? h.impressions_delta[i] : undefined;
+      const revDelta = h.revenue_delta_pct ? h.revenue_delta_pct[i] : undefined;
+      cells += `<td class="wow-cell">${deltaSpan(impDelta)}</td>`;
+      cells += `<td class="wow-cell">${wowSpan(revDelta)}</td>`;
+    }
+    return `<tr>
+      <td class="left"><span class="am-tag">${h.am}</span></td>
+      <td class="left">
+        <div class="hospital-name clickable" data-uid="${h.uid}">${h.hospital}</div>
+        <div class="hospital-sub"><span class="tier-badge">T${h.tier}</span> ${h.district}</div>
+      </td>
+      ${cells}
+    </tr>`;
+  }).join('');
+  attachHospitalNameClicks(tbody);
+}
+
+function attachHospitalNameClicks(tbody){
+  [...tbody.querySelectorAll('.hospital-name[data-uid]')].forEach(el=>{
+    el.onclick = ()=>{
+      addToSelection(el.dataset.uid);
+      window.scrollTo({top:0, behavior:'smooth'});
+    };
+  });
+}
+
+function renderHeadTotal(){
+  const thead = document.getElementById('thead');
+  thead.innerHTML = `<tr>
+    <th class="nosort left">주차</th>
+    <th class="nosort metric-imp">광고 집행 수</th>
+    <th class="nosort metric-imp">광고 집행 증감</th>
+    <th class="nosort metric-rev">CPC 매출액</th>
+    <th class="nosort metric-rev">CPC 매출 WoW</th>
+  </tr>`;
+}
+
+function renderRowsTotal(){
+  const tbody = document.getElementById('tbody');
+  const gt = DATA.grand_total;
+  const rowsHtml = weeks.map((w,i)=>{
+    const imp = gt.impressions[i];
+    const rev = gt.revenue[i];
+    const impDelta = gt.impressions_delta ? gt.impressions_delta[i] : undefined;
+    const revWow = gt.revenue_delta_pct ? gt.revenue_delta_pct[i] : undefined;
+    return `<tr>
+      <td class="left" style="font-weight:600;">${shortDate(w)}</td>
+      <td class="val-cell imp">${fmtNum(imp)}</td>
+      <td class="wow-cell">${deltaSpan(impDelta)}</td>
+      <td class="val-cell rev">${fmtWon(rev)}</td>
+      <td class="wow-cell">${wowSpan(revWow)}</td>
+    </tr>`;
+  }).join('');
+  tbody.innerHTML = rowsHtml;
+}
+
+function renderHeadByAM(){
+  const thead = document.getElementById('thead');
+  let groupRow = `<tr class="group-row"><th class="nosort left" rowspan="2">AM</th>`;
+  let subRow = `<tr>`;
+  weeks.forEach((w,i)=>{
+    groupRow += `<th colspan="2">${shortDate(w)}</th>`;
+    subRow += `<th class="nosort metric-rev">CPC매출</th>`;
+    subRow += `<th class="nosort metric-rev">WoW</th>`;
+  });
+  groupRow += `</tr>`;
+  subRow += `</tr>`;
+  thead.innerHTML = groupRow + subRow;
+}
+
+function renderRowsByAM(rows){
+  const tbody = document.getElementById('tbody');
+  if(rows.length===0){ tbody.innerHTML = emptyRow(); return; }
+
+  // sum revenue per AM per week
+  const byAM = {};
+  const amOrderLocal = [];
+  rows.forEach(h=>{
+    if(!byAM[h.am]){ byAM[h.am] = new Array(weeks.length).fill(0); amOrderLocal.push(h.am); }
+    weeks.forEach((w,i)=>{ byAM[h.am][i] += (h.revenue[i] ?? 0); });
+  });
+  amOrderLocal.sort((a,b)=> byAM[b][0]-byAM[a][0]);
+
+  tbody.innerHTML = amOrderLocal.map(am=>{
+    const arr = byAM[am];
+    let cells = '';
+    weeks.forEach((w,i)=>{
+      cells += `<td class="val-cell rev">${fmtWon(arr[i])}</td>`;
+      const wow = pctChange(arr[i], arr[i+1]);
+      cells += `<td class="wow-cell">${wowSpan(wow)}</td>`;
+    });
+    return `<tr>
+      <td class="left"><span class="am-tag">${am}</span></td>
+      ${cells}
+    </tr>`;
+  }).join('');
+}
+
+function emptyRow(){
+  return `<tr class="empty-row"><td colspan="30">조건에 맞는 병원이 없어요.</td></tr>`;
+}
+
+/* ---------------- main render ---------------- */
+
+function render(){
+  buildAmPills();
+  const filtered = getFiltered();
+  const sorted = sortRows(filtered.slice());
+  renderKPIs(filtered);
+
+  if(state.view === 'actual'){
+    renderHeadActual();
+    renderRowsActual(sorted);
+    document.getElementById('footNote').textContent =
+      `${sorted.length}개 병원 표시 중 · 실제값(광고 집행 수 · CPC 매출액) 기준`;
+  } else if(state.view === 'wow'){
+    renderHeadWow();
+    renderRowsWow(sorted);
+    document.getElementById('footNote').textContent =
+      `${sorted.length}개 병원 표시 중 · WoW 증감률(광고 집행 · CPC 매출) 기준`;
+  } else if(state.view === 'byam'){
+    renderHeadByAM();
+    renderRowsByAM(sorted);
+    document.getElementById('footNote').textContent =
+      `${new Set(sorted.map(h=>h.am)).size}명 AM · 병원 합산 CPC 매출 기준 (현재 필터 반영)`;
+  } else {
+    renderHeadTotal();
+    renderRowsTotal();
+    document.getElementById('footNote').textContent =
+      `전체 AM · 전체 병원 합산 (필터 미적용) · 시트 원본의 "총 합산" 행 기준`;
+  }
+
+  document.getElementById('periodBadge').textContent = `${shortDate(weeks[weeks.length-1])} → ${shortDate(weeks[0])}`;
+}
+
+// initial default selection: top 3 hospitals by latest CPC revenue
+(function initDefaultSelection(){
+  const sorted = hospitals.slice().sort((a,b)=>(b.revenue[0]??0)-(a.revenue[0]??0));
+  state.selected = sorted.slice(0,3).map(h=>h.uid);
+})();
+
+buildFilterOptions();
+renderExcludeChips();
+render();
+renderChartSection();
+</script>
+</body>
+</html>
