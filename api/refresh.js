@@ -4,7 +4,7 @@
 // 전제조건: 시트가 "링크가 있는 모든 사용자 - 뷰어"로 공유되어 있어야 해요.
 
 const SHEET_ID = '12of_jOnboNT38jzIgD66bJboEfejaXf2CBnHHLvrItE';
-const SHEET_TAB_NAME = 'Sheet 1 (2)';
+const SHEET_TAB_NAME = 'KR7 Weekly 매출 ';
 
 function csvUrl() {
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB_NAME)}`;
