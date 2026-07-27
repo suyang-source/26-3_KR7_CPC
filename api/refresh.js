@@ -131,7 +131,16 @@ module.exports = async function handler(req, res) {
     const rows = parseCSV(text);
     const data = buildData(rows);
     if (!data.hospitals || data.hospitals.length === 0) {
-      res.status(500).json({ error: '데이터를 찾지 못했어요. 시트 구조가 바뀌었는지 확인해주세요.' });
+      res.status(500).json({
+        error: '데이터를 찾지 못했어요. 시트 구조가 바뀌었는지 확인해주세요.',
+        debug: {
+          totalRows: rows.length,
+          row0: rows[0] || null,
+          row1: rows[1] || null,
+          row2: rows[2] || null,
+          row3: rows[3] || null
+        }
+      });
       return;
     }
     res.setHeader('Cache-Control', 'no-store');
