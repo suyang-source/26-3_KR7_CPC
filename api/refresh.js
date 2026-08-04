@@ -41,7 +41,8 @@ function cleanList(lst, isPct) {
   if (!lst) return [];
   return lst.map(v => {
     if (v === null || v === undefined) return null;
-    return isPct ? Math.round(v * 1000) / 10 : Math.round(v);
+    // CSV로 읽어오면 %컬럼은 이미 "-19.16" 형태(표시값)로 들어오므로 추가로 ×100 하지 않음
+    return isPct ? Math.round(v * 10) / 10 : Math.round(v);
   });
 }
 
