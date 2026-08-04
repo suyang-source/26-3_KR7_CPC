@@ -45,9 +45,25 @@ function cleanList(lst, isPct) {
   });
 }
 
+function getWeekColumns(header) {
+  // 컬럼 H(index7)부터 2칸씩(값, WoW) 이동하며 날짜가 있는 만큼 자동으로 인식
+  const valueIdx = [];
+  const deltaIdx = [];
+  let i = 7;
+  while (header[i] !== undefined && header[i] !== null && String(header[i]).trim() !== '') {
+    valueIdx.push(i);
+    i += 2;
+  }
+  for (let k = 0; k < valueIdx.length - 1; k++) {
+    deltaIdx.push(valueIdx[k] + 1);
+  }
+  return { valueIdx, deltaIdx };
+}
+
 function buildData(rows) {
   const header = rows[0];
-  const weeks = [7, 9, 11, 13, 15, 17, 19, 21].map(i => header[i]);
+  const { valueIdx, deltaIdx } = getWeekColumns(header);
+  const weeks = valueIdx.map(i => header[i]);
 
   const data = {};
   const order = [];
@@ -79,8 +95,8 @@ function buildData(rows) {
 
     const metric = r[6];
     if (!metric) continue;
-    const vals = [7, 9, 11, 13, 15, 17, 19, 21].map(idx => numOrNull(r[idx]));
-    const deltas = [8, 10, 12, 14, 16, 18, 20].map(idx => numOrNull(r[idx]));
+    const vals = valueIdx.map(idx => numOrNull(r[idx]));
+    const deltas = deltaIdx.map(idx => numOrNull(r[idx]));
 
     if (inTotal) {
       totalBlock.metrics[metric] = vals;
