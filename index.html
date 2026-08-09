@@ -8,27 +8,27 @@
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
   :root{
-    --bg:#0f1417;
-    --panel:#161d22;
-    --panel-2:#1c252b;
-    --line:#2a343a;
-    --line-soft:#232c32;
-    --text:#e8edf0;
-    --text-dim:#8fa0a8;
-    --text-faint:#5c6b72;
-    --teal:#3ddcc0;
-    --teal-dim:#1d4a44;
-    --amber:#f0a13c;
-    --amber-dim:#4a3418;
-    --red:#e8604f;
-    --green:#5fd68a;
+    --bg:#f4f5f7;
+    --panel:#ffffff;
+    --panel-2:#f1f2f5;
+    --line:#e1e4e9;
+    --line-soft:#eaecf0;
+    --text:#1c2430;
+    --text-dim:#5b6572;
+    --text-faint:#8a939e;
+    --teal:#0e9a80;
+    --teal-dim:#dcf3ec;
+    --amber:#c67c14;
+    --amber-dim:#fbe9cc;
+    --red:#d1453b;
+    --green:#1f9254;
     --radius:10px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(1200px 600px at 15% -10%, #17222580, transparent),
+      radial-gradient(1200px 600px at 15% -10%, #ffffff, transparent),
       var(--bg);
     color:var(--text);
     font-family:'IBM Plex Sans KR', -apple-system, sans-serif;
@@ -72,9 +72,18 @@
   .kpi-delta{font-size:12px; margin-top:6px; font-family:'IBM Plex Mono',monospace;}
   .up{color:var(--green);} .down{color:var(--red);} .flat{color:var(--text-faint);}
 
+  .top-tabs{display:flex; gap:8px; margin-bottom:14px;}
+  .top-tab-btn{
+    border:1px solid var(--line); background:var(--panel); color:var(--text-dim);
+    padding:9px 20px; font-size:13.5px; font-weight:700; cursor:pointer; font-family:inherit;
+    border-radius:8px;
+  }
+  .top-tab-btn.active{background:var(--text); color:#fff; border-color:var(--text);}
+  .top-tab-btn:hover:not(.active){border-color:var(--text-faint);}
+
   /* Section title */
   .section-title{
-    display:flex; align-items:center; gap:10px; margin:30px 0 12px;
+    display:flex; align-items:center; gap:10px; margin:20px 0 10px;
   }
   .section-title h2{font-size:15px; margin:0; font-weight:700;}
   .section-title .section-sub{font-size:12px; color:var(--text-faint);}
@@ -82,7 +91,7 @@
   /* Chart panel */
   .chart-panel{
     background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
-    padding:18px 20px 20px;
+    padding:12px 16px 14px;
   }
   .chart-toolbar{
     display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:14px;
@@ -92,14 +101,14 @@
   .picker-dropdown{
     position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:10;
     background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
-    max-height:240px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,.4);
+    max-height:240px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,.12);
   }
   .picker-item{
     padding:8px 12px; font-size:12.5px; cursor:pointer; display:flex; justify-content:space-between; gap:8px;
     border-bottom:1px solid var(--line-soft);
   }
   .picker-item:last-child{border-bottom:none;}
-  .picker-item:hover{background:#26313a;}
+  .picker-item:hover{background:#eef1f4;}
   .picker-item .pi-am{color:var(--text-faint); font-size:11px;}
   .metric-toggle{display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden;}
   .metric-toggle button{
@@ -108,7 +117,7 @@
   }
   .metric-toggle button.active.imp{background:var(--teal-dim); color:var(--teal);}
   .metric-toggle button.active.rev{background:var(--amber-dim); color:var(--amber);}
-  .chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; min-height:30px;}
+  .chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; min-height:24px;}
   .chip{
     display:flex; align-items:center; gap:7px; padding:5px 8px 5px 10px; border-radius:999px;
     background:var(--panel-2); border:1px solid var(--line); font-size:12px;
@@ -120,13 +129,13 @@
   .chip .chip-x:hover{color:var(--red);}
   .chip-empty{color:var(--text-faint); font-size:12px; padding:6px 0;}
   .metric-note-banner{
-    display:flex; align-items:flex-start; gap:8px; background:var(--teal-dim); border:1px solid #2a5a52;
-    border-radius:8px; padding:10px 14px; margin:-4px 0 18px; font-size:12px; color:#bfe9de; line-height:1.5;
+    display:flex; align-items:flex-start; gap:8px; background:var(--teal-dim); border:1px solid #a9ddce;
+    border-radius:8px; padding:10px 14px; margin:-4px 0 18px; font-size:12px; color:#0b6e59; line-height:1.5;
   }
   .metric-note-banner b{color:var(--teal);}
   .metric-note-banner .icon{flex-shrink:0; font-size:13px;}
   #excludeChipRow{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
-  #excludeChipRow .chip{border-color:#5a2f2a; background:#241816;}
+  #excludeChipRow .chip{border-color:#f0b8ae; background:#fdecea;}
   #excludeChipRow .chip-x:hover{color:var(--red);}
   .chart-svg-wrap{width:100%; overflow-x:auto; position:relative;}
   svg.chart{display:block; width:100%; height:auto;}
@@ -135,8 +144,8 @@
   .hover-dot{stroke:var(--panel); stroke-width:2; opacity:0; pointer-events:none;}
   .chart-tooltip{
     position:absolute; pointer-events:none; z-index:20; opacity:0; transition:opacity .08s ease;
-    background:#1a2329; border:1px solid var(--line); border-radius:8px; padding:9px 12px;
-    font-size:11.5px; box-shadow:0 8px 20px rgba(0,0,0,.45); min-width:150px;
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:9px 12px;
+    font-size:11.5px; box-shadow:0 8px 20px rgba(0,0,0,.12); min-width:150px;
   }
   .chart-tooltip .tt-date{color:var(--text-faint); font-size:10.5px; margin-bottom:6px; font-family:'IBM Plex Mono',monospace;}
   .chart-tooltip .tt-row{display:flex; align-items:center; gap:6px; justify-content:space-between; padding:2px 0;}
@@ -191,6 +200,62 @@
   .tab-btn.active.tab-total{border-top:2px solid #8fa5ff;}
   .tab-btn.active.tab-byam{border-top:2px solid #e07fd0;}
   .tab-btn.active.tab-monthly{border-top:2px solid #5fd68a;}
+  .tab-btn.active.tab-cards{border-top:2px solid #7fb8e0;}
+
+  .card-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px;
+  }
+  .h-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px;
+  }
+  .h-card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px;}
+  .h-card-name{font-weight:600; font-size:13px; color:var(--text);}
+  .h-card-meta{display:flex; gap:6px; align-items:center; margin-top:4px; font-size:11px; color:var(--text-faint);}
+  .h-card-delta{text-align:right;}
+  .h-card-latest{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px;}
+  .h-card-wow{font-family:'IBM Plex Mono',monospace; font-size:11px; margin-top:2px;}
+  .h-card-chart{height:86px; margin:8px 0 4px;}
+  .h-card-range{
+    text-align:center; font-size:10px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace;
+    margin-bottom:8px;
+  }
+  .h-card-history{
+    display:flex; gap:6px; margin-bottom:6px; padding:8px 0; border-top:1px solid var(--line-soft);
+  }
+  .hist-item{
+    flex:1; text-align:center; padding:4px 2px; border-radius:6px; background:var(--panel-2);
+  }
+  .hist-item.hist-current{background:var(--teal-dim);}
+  .hist-lbl{display:block; font-size:9.5px; color:var(--text-faint); margin-bottom:2px;}
+  .hist-val{display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; color:var(--text);}
+  .hist-item.hist-current .hist-val{color:#0b6e59;}
+  .h-card-foot{
+    display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-faint);
+    border-top:1px solid var(--line-soft); padding-top:7px; margin-top:2px;
+  }
+  .card-toolbar{display:flex; gap:10px; align-items:center; margin-bottom:14px; flex-wrap:wrap;}
+  .card-toolbar select{min-width:150px;}
+
+  .movers-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:22px;}
+  .movers-col-title{font-size:12.5px; font-weight:700; margin-bottom:8px;}
+  .movers-col-title.down{color:var(--red);}
+  .movers-col-title.up{color:var(--green);}
+  .movers-panels{display:flex; flex-direction:column; gap:8px;}
+  .mover-panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:10px 12px;
+  }
+  .mover-panel-head{margin-bottom:6px;}
+  .mover-row{display:flex; align-items:center; gap:8px; padding:3px 0; font-size:12px;}
+  .mover-rank{
+    width:16px; height:16px; flex:none; border-radius:50%; background:var(--panel-2); color:var(--text-dim);
+    font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;
+  }
+  .mover-name{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text);}
+  .mover-val{font-family:'IBM Plex Mono',monospace; font-size:11.5px; font-weight:600; white-space:nowrap;}
+  .mover-val.down{color:var(--red);}
+  .mover-val.up{color:var(--green);}
+  @media(max-width:700px){.movers-grid{grid-template-columns:1fr;}}
 
   /* Table */
   .table-wrap{
@@ -200,7 +265,7 @@
   .table-scroll{overflow-x:auto;}
   table{border-collapse:collapse; width:100%; min-width:1200px;}
   thead th{
-    position:sticky; top:0; background:#1a2329; z-index:2;
+    position:sticky; top:0; background:#eef0f3; z-index:2;
     text-align:right; font-size:10.5px; color:var(--text-faint); font-weight:600;
     letter-spacing:.03em; padding:9px 10px;
     border-bottom:1px solid var(--line); white-space:nowrap; cursor:pointer;
@@ -209,23 +274,23 @@
   thead th.left{text-align:left;}
   thead th.nosort{cursor:default;}
   thead tr.group-row th{
-    text-align:center; font-size:10.5px; color:var(--text-dim); background:#151d22;
+    text-align:center; font-size:10.5px; color:var(--text-dim); background:#e7e9ed;
     border-bottom:1px solid var(--line-soft); padding:7px 6px; text-transform:none; letter-spacing:0;
   }
   thead th .arrow{opacity:.35; margin-left:3px; font-size:9px;}
   thead th.sorted .arrow{opacity:1; color:var(--teal);}
-  thead th.metric-imp{color:#7fd6c4;}
-  thead th.metric-rev{color:#e0ac5f;}
+  thead th.metric-imp{color:#0e8f76;}
+  thead th.metric-rev{color:#a5720f;}
   tbody td{
     padding:9px 10px; font-size:12px; border-bottom:1px solid var(--line-soft);
     white-space:nowrap; text-align:right;
   }
   tbody td.left{text-align:left;}
   tbody tr{transition:background .1s ease;}
-  tbody tr:hover{background:#20292f;}
+  tbody tr:hover{background:#f5f7f9;}
   .am-tag{
     display:inline-block; padding:2px 9px; border-radius:5px; font-size:11px; font-weight:600;
-    background:#22303a; color:#8fd6ff;
+    background:#e5f0fb; color:#2563a8;
   }
   .hospital-name{font-weight:500; color:var(--text);}
   .hospital-name.clickable{cursor:pointer;}
@@ -236,8 +301,8 @@
     background:var(--panel); color:var(--text-dim); border:1px solid var(--line);
   }
   .val-cell{font-family:'IBM Plex Mono',monospace;}
-  .val-cell.imp{color:#bfe9de;}
-  .val-cell.rev{color:#f0cf9e;}
+  .val-cell.imp{color:#0e8f76;}
+  .val-cell.rev{color:#a5720f;}
   .wow-cell{font-family:'IBM Plex Mono',monospace; font-size:11px;}
   tfoot td{
     padding:12px; font-size:11.5px; color:var(--text-faint); border-top:1px solid var(--line);
@@ -249,7 +314,7 @@
   ::-webkit-scrollbar-track{background:transparent;}
 
   @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
-  #refreshBtn:hover{background:#204840;}
+  #refreshBtn:hover{background:#c7ece0;}
   #refreshBtn:disabled{opacity:.6; cursor:default;}
 
   footer{
@@ -318,6 +383,11 @@
     <span class="section-sub">필터로 좁혀서 실제값 / WoW 증감률을 확인하세요</span>
   </div>
 
+  <div class="top-tabs">
+    <button class="top-tab-btn active" id="topTabTable">데이터 테이블</button>
+    <button class="top-tab-btn" id="topTabCards">병원별 카드</button>
+  </div>
+
   <div class="controls">
     <div class="ctrl-group">
       <span class="ctrl-label">AM</span>
@@ -342,24 +412,46 @@
 
   <div class="chip-row" id="excludeChipRow" style="margin:-4px 0 14px;"></div>
 
-  <div class="tabs">
-    <button class="tab-btn tab-actual active" id="tabActual">실제값 (광고 집행·매출)</button>
-    <button class="tab-btn tab-wow" id="tabWow">WoW 증감률</button>
-    <button class="tab-btn tab-byam" id="tabByAM">AM·Tier별 합계</button>
-    <button class="tab-btn tab-monthly" id="tabMonthly">월별 합산 (Tier·AM)</button>
-    <button class="tab-btn tab-total" id="tabTotal">총 합산</button>
+  <div id="tableSection">
+    <div class="tabs">
+      <button class="tab-btn tab-actual active" id="tabActual">실제값 (광고 집행·매출)</button>
+      <button class="tab-btn tab-wow" id="tabWow">WoW 증감률</button>
+      <button class="tab-btn tab-byam" id="tabByAM">AM·Tier별 합계</button>
+      <button class="tab-btn tab-monthly" id="tabMonthly">월별 합산 (Tier·AM)</button>
+      <button class="tab-btn tab-total" id="tabTotal">총 합산</button>
+    </div>
+
+    <div id="byAmChartWrap" style="display:none; margin-bottom:14px;"></div>
+
+    <div class="table-wrap" id="tableWrap">
+      <div class="table-scroll">
+        <table>
+          <thead id="thead"></thead>
+          <tbody id="tbody"></tbody>
+          <tfoot>
+            <tr><td id="footNote" colspan="30"></td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
   </div>
 
-  <div class="table-wrap">
-    <div class="table-scroll">
-      <table>
-        <thead id="thead"></thead>
-        <tbody id="tbody"></tbody>
-        <tfoot>
-          <tr><td id="footNote" colspan="30"></td></tr>
-        </tfoot>
-      </table>
+  <div id="cardsWrap" style="display:none;">
+    <div id="amMoversWrap"></div>
+    <div class="card-toolbar">
+      <div class="metric-toggle">
+        <button id="cardBtnAvg" class="active rev">CPC 매출액</button>
+        <button id="cardBtnImp" class="imp">광고 집행 수</button>
+      </div>
+      <select id="cardSortSelect">
+        <option value="wow_desc">WoW 등락 큰순</option>
+        <option value="wow_asc">WoW 등락 작은순</option>
+        <option value="latest_desc">최신값 높은순</option>
+        <option value="name">병원명순</option>
+      </select>
+      <span class="count" id="cardCount" style="font-size:11.5px; color:var(--text-faint);"></span>
     </div>
+    <div class="card-grid" id="cardGrid"></div>
   </div>
 
   <footer>최근 8주 (6.1 ~ 7.20) · 컬럼 클릭으로 정렬 · 병원명 클릭으로 비교 차트에 추가 · WoW는 직전 주 대비 증감률</footer>
@@ -384,12 +476,15 @@ let state = {
   tier: '',
   district: '',
   search: '',
+  topView: 'table', // 'table' | 'cards'
   view: 'actual', // 'actual' | 'wow'
   sortKey: 'wk0-rev',
   sortDir: 'desc',
   chartMetric: 'revenue',
   selected: [], // array of uid, in add order (comparison chart)
-  excluded: [] // array of uid, hospitals excluded from table + chart entirely
+  excluded: [], // array of uid, hospitals excluded from table + chart entirely
+  cardMetric: 'revenue',
+  cardSort: 'wow_desc'
 };
 
 let AM_ORDER = [...new Set(hospitals.map(h=>h.am))].sort();
@@ -503,6 +598,13 @@ function syncTabs(){
   document.getElementById('tabByAM').classList.toggle('active', state.view==='byam');
   document.getElementById('tabMonthly').classList.toggle('active', state.view==='monthly');
   document.getElementById('tabTotal').classList.toggle('active', state.view==='total');
+}
+
+document.getElementById('topTabTable').onclick = ()=>{ state.topView='table'; syncTopTabs(); render(); };
+document.getElementById('topTabCards').onclick = ()=>{ state.topView='cards'; syncTopTabs(); render(); };
+function syncTopTabs(){
+  document.getElementById('topTabTable').classList.toggle('active', state.topView==='table');
+  document.getElementById('topTabCards').classList.toggle('active', state.topView==='cards');
 }
 
 function getFiltered(){
@@ -670,8 +772,8 @@ function buildChartSvg(){
     return { uid, label: h.hospital, am: h.am, color: CHART_COLORS[i % CHART_COLORS.length], vals };
   });
 
-  const W = 1080, H = 340;
-  const padL = 56, padR = 24, padT = 20, padB = 34;
+  const W = 1080, H = 200;
+  const padL = 50, padR = 20, padT = 14, padB = 26;
   const plotW = W - padL - padR, plotH = H - padT - padB;
 
   let allVals = [];
@@ -1034,6 +1136,85 @@ function renderRowsTotal(){
   tbody.innerHTML = rowsHtml;
 }
 
+function renderByAmChart(rows){
+  const wrap = document.getElementById('byAmChartWrap');
+  if(rows.length===0){ wrap.innerHTML = ''; return; }
+
+  // AM별 주차 합계 (newest -> oldest, matches weeks[] order)
+  const byAm = {};
+  const amOrderLocal = [];
+  rows.forEach(h=>{
+    if(!byAm[h.am]){ byAm[h.am] = new Array(weeks.length).fill(0); amOrderLocal.push(h.am); }
+    weeks.forEach((w,i)=>{ byAm[h.am][i] += (h.revenue[i] ?? 0); });
+  });
+  amOrderLocal.sort((a,b)=> byAm[b][0]-byAm[a][0]);
+
+  const seriesList = amOrderLocal.map((am,i)=>({
+    label: am, color: CHART_COLORS[i % CHART_COLORS.length],
+    vals: [...byAm[am]].reverse() // oldest -> newest
+  }));
+
+  const W = 1080, H = 190;
+  const padL = 56, padR = 20, padT = 14, padB = 26;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+
+  let allVals = [];
+  seriesList.forEach(s=> s.vals.forEach(v=>{ if(v!==null && v!==undefined) allVals.push(v); }));
+  let maxV = Math.max(...allVals, 1) * 1.12;
+
+  const n = weeks.length;
+  const xStep = plotW / (n-1);
+  const yScale = v => padT + plotH - (v/maxV)*plotH;
+  const xScale = i => padL + i*xStep;
+  const xLabelsArr = weeksAscLabels();
+
+  const gridCount = 4;
+  let gridLines = '', yLabels = '';
+  for(let g=0; g<=gridCount; g++){
+    const v = (maxV/gridCount)*g;
+    const y = yScale(v);
+    gridLines += `<line class="grid-line" x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}"/>`;
+    yLabels += `<text class="axis-label" x="${padL-8}" y="${y+3}" text-anchor="end">${fmtWonShort(Math.round(v))}</text>`;
+  }
+  let xLabels = '';
+  xLabelsArr.forEach((lbl,i)=>{
+    xLabels += `<text class="axis-label" x="${xScale(i)}" y="${H-8}" text-anchor="middle">${lbl}</text>`;
+  });
+
+  let paths = '', dots = '';
+  seriesList.forEach(s=>{
+    let d = '';
+    s.vals.forEach((v,i)=>{
+      if(v===null||v===undefined) return;
+      const x = xScale(i), y = yScale(v);
+      d += (d==='' ? 'M':'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    });
+    paths += `<path class="series-line" d="${d.trim()}" stroke="${s.color}"/>`;
+    s.vals.forEach((v,i)=>{
+      if(v===null||v===undefined) return;
+      const x = xScale(i), y = yScale(v);
+      dots += `<circle class="series-dot" cx="${x}" cy="${y}" r="3" fill="${s.color}"><title>${s.label} · ${xLabelsArr[i]} · ${fmtWon(v)}</title></circle>`;
+    });
+  });
+
+  const legend = seriesList.map(s=>
+    `<span style="display:inline-flex; align-items:center; gap:5px; margin-right:12px; font-size:11.5px; color:var(--text-dim);">
+      <span style="width:9px; height:9px; border-radius:50%; background:${s.color}; display:inline-block;"></span>${s.label}
+    </span>`
+  ).join('');
+
+  wrap.innerHTML = `
+    <div class="chart-panel">
+      <div style="font-size:12.5px; font-weight:600; margin-bottom:8px; color:var(--text-dim);">AM별 주차 CPC 매출 추이 (현재 필터 반영)</div>
+      <div style="margin-bottom:8px;">${legend}</div>
+      <div class="chart-svg-wrap">
+        <svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+          ${gridLines}${yLabels}${xLabels}${paths}${dots}
+        </svg>
+      </div>
+    </div>`;
+}
+
 function renderHeadByAM(){
   const thead = document.getElementById('thead');
   let groupRow = `<tr class="group-row"><th class="nosort left" rowspan="2">AM</th><th class="nosort left" rowspan="2">Tier</th>`;
@@ -1155,7 +1336,7 @@ function renderRowsMonthly(rows){
   let html = '';
   amOrderLocal.forEach(am=>{
     // AM 전체 합계 행 (강조)
-    html += `<tr style="background:#1c252b;">
+    html += `<tr style="background:#eef0f3;">
       <td class="left" style="font-weight:700;"><span class="am-tag">${am}</span> <span style="color:var(--text-faint); font-weight:400; font-size:11px;">전체</span></td>
       <td class="left">–</td>
       ${rowCells(byAmTotal[am])}
@@ -1176,6 +1357,166 @@ function renderRowsMonthly(rows){
   tbody.innerHTML = html;
 }
 
+document.getElementById('cardBtnAvg').onclick = ()=>{ state.cardMetric='revenue'; syncCardMetricButtons(); renderCards(); };
+document.getElementById('cardBtnImp').onclick = ()=>{ state.cardMetric='impressions'; syncCardMetricButtons(); renderCards(); };
+function syncCardMetricButtons(){
+  document.getElementById('cardBtnAvg').classList.toggle('active', state.cardMetric==='revenue');
+  document.getElementById('cardBtnImp').classList.toggle('active', state.cardMetric==='impressions');
+}
+document.getElementById('cardSortSelect').onchange = e=>{ state.cardSort = e.target.value; renderCards(); };
+
+function miniSparklineSvg(valsNewestFirst, color){
+  const vals = [...valsNewestFirst].reverse(); // oldest -> newest
+  const labels = weeksAscLabels();
+  const W = 280, H = 78, pad = 4, padBottom = 16;
+  const plotH = H - pad - padBottom;
+  const nums = vals.filter(v=>v!==null && v!==undefined);
+  if(nums.length < 2){
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%;"><text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--text-faint)" font-size="11">데이터 부족</text></svg>`;
+  }
+  const min = Math.min(...nums), max = Math.max(...nums);
+  const rng = (max-min) || 1;
+  const n = vals.length;
+  const xStep = (W - pad*2) / (n-1);
+  const yScale = v => pad + plotH - ((v-min)/rng)*plotH;
+  let d = '';
+  let dots = '';
+  vals.forEach((v,i)=>{
+    if(v===null||v===undefined) return;
+    const x = pad + i*xStep, y = yScale(v);
+    d += (d===''?'M':'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    if(i===n-1){
+      dots += `<circle cx="${x}" cy="${y}" r="3" fill="${color}"/>`;
+    }
+  });
+  let xLabels = '';
+  labels.forEach((lbl,i)=>{
+    const x = pad + i*xStep;
+    xLabels += `<text x="${x}" y="${H-3}" text-anchor="middle" font-size="8.5" fill="var(--text-faint)" font-family="'IBM Plex Mono',monospace">${lbl}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%; height:100%;">
+    <line x1="${pad}" y1="${pad+plotH}" x2="${W-pad}" y2="${pad+plotH}" stroke="var(--line)" stroke-width="1"/>
+    <path d="${d.trim()}" fill="none" stroke="${color}" stroke-width="2"/>
+    ${dots}
+    ${xLabels}
+  </svg>`;
+}
+
+function renderAmTopMovers(){
+  const wrap = document.getElementById('amMoversWrap');
+  const rows = getFiltered();
+
+  const byAm = {};
+  rows.forEach(h=>{
+    const pct = h.revenue_delta_pct ? h.revenue_delta_pct[1] : null; // 전주(idx1) vs 2주전(idx2)
+    if(pct===null || pct===undefined) return;
+    const amt1 = h.revenue[1], amt2 = h.revenue[2];
+    const diffAmt = (amt1!=null && amt2!=null) ? amt1-amt2 : null;
+    if(!byAm[h.am]) byAm[h.am] = [];
+    byAm[h.am].push({ h, pct, diffAmt });
+  });
+  const amList = Object.keys(byAm).sort();
+
+  if(amList.length===0){ wrap.innerHTML = ''; return; }
+
+  function panelHtml(am, arr, mode){
+    const sorted = arr.slice().sort((a,b)=> mode==='decline' ? a.pct-b.pct : b.pct-a.pct).slice(0,3);
+    const cls = mode==='decline' ? 'down' : 'up';
+    const arrowChar = mode==='decline' ? '▼' : '▲';
+    const rowsHtml = sorted.length ? sorted.map((x,i)=>`
+      <div class="mover-row">
+        <span class="mover-rank">${i+1}</span>
+        <span class="mover-name">${x.h.hospital}</span>
+        <span class="mover-val ${cls}">${arrowChar} ${x.pct>0?'+':''}${x.pct.toFixed(1)}%${x.diffAmt!=null ? ' ('+(x.diffAmt>0?'+':'')+fmtWonShort(x.diffAmt)+')' : ''}</span>
+      </div>`).join('') : `<div style="color:var(--text-faint); font-size:11.5px; padding:2px 0;">데이터 없음</div>`;
+    return `<div class="mover-panel">
+      <div class="mover-panel-head"><span class="am-tag">${am}</span></div>
+      ${rowsHtml}
+    </div>`;
+  }
+
+  const declineHtml = amList.map(am=>panelHtml(am, byAm[am], 'decline')).join('');
+  const growthHtml = amList.map(am=>panelHtml(am, byAm[am], 'growth')).join('');
+
+  wrap.innerHTML = `
+    <div class="section-title" style="margin-top:0;">
+      <h2 style="font-size:14px;">AM별 TOP 하락 · 성장 병원</h2>
+      <span class="section-sub">전주(${shortDate(weeks[1])}) vs 2주전(${shortDate(weeks[2])}) 기준 · CPC 매출</span>
+    </div>
+    <div class="movers-grid">
+      <div>
+        <div class="movers-col-title down">▼ 하락 TOP3</div>
+        <div class="movers-panels">${declineHtml}</div>
+      </div>
+      <div>
+        <div class="movers-col-title up">▲ 성장 TOP3</div>
+        <div class="movers-panels">${growthHtml}</div>
+      </div>
+    </div>`;
+}
+
+function renderCards(){
+  if(state.topView !== 'cards') return;
+  renderAmTopMovers();
+  const wrap = document.getElementById('cardGrid');
+  const rows = getFiltered();
+  const metric = state.cardMetric;
+  const fmt = metric==='revenue' ? fmtWon : fmtNum;
+  const color = metric==='revenue' ? '#f0a13c' : '#3ddcc0';
+
+  let list = rows.slice();
+  const sortKey = state.cardSort;
+  list.sort((a,b)=>{
+    if(sortKey==='name') return a.hospital.localeCompare(b.hospital, 'ko');
+    if(sortKey==='latest_desc') return (b[metric][0]??-1e18) - (a[metric][0]??-1e18);
+    const aw = metric==='revenue' ? (a.revenue_delta_pct?a.revenue_delta_pct[0]:null) : (a.impressions_delta?a.impressions_delta[0]:null);
+    const bw = metric==='revenue' ? (b.revenue_delta_pct?b.revenue_delta_pct[0]:null) : (b.impressions_delta?b.impressions_delta[0]:null);
+    const av = aw ?? -1e18, bv = bw ?? -1e18;
+    return sortKey==='wow_asc' ? av-bv : bv-av;
+  });
+
+  document.getElementById('cardCount').textContent = `${list.length}개 표시`;
+
+  if(list.length===0){
+    wrap.innerHTML = `<div class="empty-row" style="grid-column:1/-1;">조건에 맞는 병원이 없어요.</div>`;
+    return;
+  }
+
+  wrap.innerHTML = list.map(h=>{
+    const latest = h[metric][0];
+    const prev1 = h[metric][1];
+    const prev2 = h[metric][2];
+    const wowVal = metric==='revenue' ? (h.revenue_delta_pct?h.revenue_delta_pct[0]:null) : (h.impressions_delta?h.impressions_delta[0]:null);
+    const wowHtml = metric==='revenue' ? wowSpan(wowVal) : deltaSpan(wowVal);
+    return `<div class="h-card">
+      <div class="h-card-head">
+        <div>
+          <div class="h-card-name">${h.hospital}</div>
+          <div class="h-card-meta">
+            <span class="am-tag">${h.am}</span>
+            <span class="tier-badge">T${h.tier}</span>
+            <span>${h.district}</span>
+          </div>
+        </div>
+        <div class="h-card-delta">
+          <div class="h-card-latest">${fmt(latest)}</div>
+          <div class="h-card-wow">${wowHtml}</div>
+        </div>
+      </div>
+      <div class="h-card-history">
+        <div class="hist-item"><span class="hist-lbl">${shortDate(weeks[2])}</span><span class="hist-val">${fmt(prev2)}</span></div>
+        <div class="hist-item"><span class="hist-lbl">${shortDate(weeks[1])}</span><span class="hist-val">${fmt(prev1)}</span></div>
+        <div class="hist-item hist-current"><span class="hist-lbl">${shortDate(weeks[0])}</span><span class="hist-val">${fmt(latest)}</span></div>
+      </div>
+      <div class="h-card-chart">${miniSparklineSvg(h[metric], color)}</div>
+      <div class="h-card-foot">
+        <span>광고 집행 ${fmtNum(h.impressions[0])}</span>
+        <span>CPC매출 ${fmtWon(h.revenue[0])}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function emptyRow(){
   return `<tr class="empty-row"><td colspan="30">조건에 맞는 병원이 없어요.</td></tr>`;
 }
@@ -1188,6 +1529,18 @@ function render(){
   const sorted = sortRows(filtered.slice());
   renderKPIs(filtered);
 
+  const tableSection = document.getElementById('tableSection');
+  const cardsWrap = document.getElementById('cardsWrap');
+  tableSection.style.display = state.topView === 'cards' ? 'none' : '';
+  cardsWrap.style.display = state.topView === 'cards' ? '' : 'none';
+  document.getElementById('byAmChartWrap').style.display = 'none';
+
+  if(state.topView === 'cards'){
+    renderCards();
+    document.getElementById('periodBadge').textContent = `${shortDate(weeks[weeks.length-1])} → ${shortDate(weeks[0])}`;
+    return;
+  }
+
   if(state.view === 'actual'){
     renderHeadActual();
     renderRowsActual(sorted);
@@ -1199,6 +1552,8 @@ function render(){
     document.getElementById('footNote').textContent =
       `${sorted.length}개 병원 표시 중 · WoW 증감률(광고 집행 · CPC 매출) 기준`;
   } else if(state.view === 'byam'){
+    document.getElementById('byAmChartWrap').style.display = '';
+    renderByAmChart(sorted);
     renderHeadByAM();
     renderRowsByAM(sorted);
     document.getElementById('footNote').textContent =
