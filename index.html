@@ -1408,9 +1408,9 @@ function renderAmTopMovers(){
 
   const byAm = {};
   rows.forEach(h=>{
-    const pct = h.revenue_delta_pct ? h.revenue_delta_pct[1] : null; // 전주(idx1) vs 2주전(idx2)
+    const pct = h.revenue_delta_pct ? h.revenue_delta_pct[0] : null; // 최신주(idx0) vs 직전주(idx1)
     if(pct===null || pct===undefined) return;
-    const amt1 = h.revenue[1], amt2 = h.revenue[2];
+    const amt1 = h.revenue[0], amt2 = h.revenue[1];
     const diffAmt = (amt1!=null && amt2!=null) ? amt1-amt2 : null;
     if(!byAm[h.am]) byAm[h.am] = [];
     byAm[h.am].push({ h, pct, diffAmt });
@@ -1441,7 +1441,7 @@ function renderAmTopMovers(){
   wrap.innerHTML = `
     <div class="section-title" style="margin-top:0;">
       <h2 style="font-size:14px;">AM별 TOP 하락 · 성장 병원</h2>
-      <span class="section-sub">전주(${shortDate(weeks[1])}) vs 2주전(${shortDate(weeks[2])}) 기준 · CPC 매출</span>
+      <span class="section-sub">최신주(${shortDate(weeks[0])}) vs 직전주(${shortDate(weeks[1])}) 기준 · CPC 매출</span>
     </div>
     <div class="movers-grid">
       <div>
