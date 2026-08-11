@@ -401,6 +401,18 @@
       <span class="ctrl-label">지역</span>
       <select id="districtSelect"><option value="">전체</option></select>
     </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">CPC WoW</span>
+      <select id="wowFilterSelect">
+        <option value="">전체</option>
+        <option value="gte20">20% 이상</option>
+        <option value="gte30">30% 이상</option>
+        <option value="gte50">50% 이상</option>
+        <option value="lte-10">-10% 이하</option>
+        <option value="lte-20">-20% 이하</option>
+        <option value="lte-50">-50% 이하</option>
+      </select>
+    </div>
     <div class="ctrl-group" style="flex:1; min-width:180px;">
       <input type="text" id="searchInput" placeholder="병원명 검색...">
     </div>
@@ -476,6 +488,7 @@ let state = {
   tier: '',
   district: '',
   search: '',
+  wowFilter: '',
   topView: 'table', // 'table' | 'cards'
   view: 'actual', // 'actual' | 'wow'
   sortKey: 'wk0-rev',
@@ -581,6 +594,7 @@ function buildFilterOptions(){
   distSel.innerHTML = '<option value="">전체</option>' + districts.map(d=>`<option value="${d}">${d}</option>`).join('');
   tierSel.onchange = e=>{ state.tier = e.target.value; render(); };
   distSel.onchange = e=>{ state.district = e.target.value; render(); };
+  document.getElementById('wowFilterSelect').onchange = e=>{ state.wowFilter = e.target.value; render(); };
 }
 
 document.getElementById('searchInput').addEventListener('input', e=>{
@@ -607,6 +621,21 @@ function syncTopTabs(){
   document.getElementById('topTabCards').classList.toggle('active', state.topView==='cards');
 }
 
+function passesWowFilter(h){
+  if(!state.wowFilter) return true;
+  const w = h.revenue_delta_pct ? h.revenue_delta_pct[0] : null;
+  if(w===null || w===undefined) return false;
+  switch(state.wowFilter){
+    case 'gte20': return w >= 20;
+    case 'gte30': return w >= 30;
+    case 'gte50': return w >= 50;
+    case 'lte-10': return w <= -10;
+    case 'lte-20': return w <= -20;
+    case 'lte-50': return w <= -50;
+    default: return true;
+  }
+}
+
 function getFiltered(){
   return hospitals.filter(h=>{
     if(state.excluded.includes(h.uid)) return false;
@@ -614,6 +643,7 @@ function getFiltered(){
     if(state.tier && h.tier !== state.tier) return false;
     if(state.district && h.district !== state.district) return false;
     if(state.search && !h.hospital.toLowerCase().includes(state.search)) return false;
+    if(!passesWowFilter(h)) return false;
     return true;
   });
 }
@@ -1046,6 +1076,14 @@ function wowSpan(v){
   return `<span class="${cls}">${arrow} ${v>0?'+':''}${v.toFixed(1)}%</span>`;
 }
 
+function wowSpanWithAmount(pct, amt){
+  if(pct===null||pct===undefined) return '<span class="flat">–</span>';
+  const cls = pct>0.05?'up':(pct<-0.05?'down':'flat');
+  const arrow = pct>0.05?'▲':(pct<-0.05?'▼':'●');
+  const amtStr = (amt!==null && amt!==undefined) ? ` (${amt>0?'+':''}${amt.toLocaleString('ko-KR')})` : '';
+  return `<span class="${cls}">${arrow} ${pct>0?'+':''}${pct.toFixed(1)}%<span style="opacity:.75; font-size:10.5px;">${amtStr}</span></span>`;
+}
+
 function deltaSpan(v){
   if(v===null||v===undefined) return '<span class="flat">–</span>';
   const cls = v>0?'up':(v<0?'down':'flat');
@@ -1082,8 +1120,10 @@ function renderRowsWow(rows){
     for(let i=0;i<weeks.length-1;i++){
       const impDelta = h.impressions_delta ? h.impressions_delta[i] : undefined;
       const revDelta = h.revenue_delta_pct ? h.revenue_delta_pct[i] : undefined;
+      const amt1 = h.revenue[i], amt2 = h.revenue[i+1];
+      const revAmt = (amt1!=null && amt2!=null) ? Math.round(amt1-amt2) : null;
       cells += `<td class="wow-cell">${deltaSpan(impDelta)}</td>`;
-      cells += `<td class="wow-cell">${wowSpan(revDelta)}</td>`;
+      cells += `<td class="wow-cell">${wowSpanWithAmount(revDelta, revAmt)}</td>`;
     }
     return `<tr>
       <td class="left"><span class="am-tag">${h.am}</span></td>
@@ -1220,7 +1260,9 @@ function renderHeadByAM(){
   let groupRow = `<tr class="group-row"><th class="nosort left" rowspan="2">AM</th><th class="nosort left" rowspan="2">Tier</th>`;
   let subRow = `<tr>`;
   weeks.forEach((w,i)=>{
-    groupRow += `<th colspan="2">${shortDate(w)}</th>`;
+    groupRow += `<th colspan="4">${shortDate(w)}</th>`;
+    subRow += `<th class="nosort metric-imp">광고집행</th>`;
+    subRow += `<th class="nosort metric-imp">증감</th>`;
     subRow += `<th class="nosort metric-rev">CPC매출</th>`;
     subRow += `<th class="nosort metric-rev">WoW</th>`;
   });
@@ -1233,13 +1275,19 @@ function renderRowsByAM(rows){
   const tbody = document.getElementById('tbody');
   if(rows.length===0){ tbody.innerHTML = emptyRow(); return; }
 
-  // sum revenue per AM+Tier per week
+  // sum revenue + impressions per AM+Tier per week
   const byGroup = {};
   const groupOrder = [];
   rows.forEach(h=>{
     const key = h.am + '||' + h.tier;
-    if(!byGroup[key]){ byGroup[key] = { am: h.am, tier: h.tier, arr: new Array(weeks.length).fill(0) }; groupOrder.push(key); }
-    weeks.forEach((w,i)=>{ byGroup[key].arr[i] += (h.revenue[i] ?? 0); });
+    if(!byGroup[key]){
+      byGroup[key] = { am: h.am, tier: h.tier, rev: new Array(weeks.length).fill(0), imp: new Array(weeks.length).fill(0) };
+      groupOrder.push(key);
+    }
+    weeks.forEach((w,i)=>{
+      byGroup[key].rev[i] += (h.revenue[i] ?? 0);
+      byGroup[key].imp[i] += (h.impressions[i] ?? 0);
+    });
   });
   groupOrder.sort((a,b)=>{
     const ga = byGroup[a], gb = byGroup[b];
@@ -1249,11 +1297,13 @@ function renderRowsByAM(rows){
 
   tbody.innerHTML = groupOrder.map(key=>{
     const g = byGroup[key];
-    const arr = g.arr;
     let cells = '';
     weeks.forEach((w,i)=>{
-      cells += `<td class="val-cell rev">${fmtWon(arr[i])}</td>`;
-      const wow = pctChange(arr[i], arr[i+1]);
+      const impDiff = (i < weeks.length-1) ? Math.round(g.imp[i] - g.imp[i+1]) : null;
+      cells += `<td class="val-cell imp">${fmtNum(g.imp[i])}</td>`;
+      cells += `<td class="wow-cell">${deltaSpan(impDiff)}</td>`;
+      cells += `<td class="val-cell rev">${fmtWon(g.rev[i])}</td>`;
+      const wow = pctChange(g.rev[i], g.rev[i+1]);
       cells += `<td class="wow-cell">${wowSpan(wow)}</td>`;
     });
     return `<tr>
