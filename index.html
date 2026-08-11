@@ -200,6 +200,7 @@
   .tab-btn.active.tab-total{border-top:2px solid #8fa5ff;}
   .tab-btn.active.tab-byam{border-top:2px solid #e07fd0;}
   .tab-btn.active.tab-monthly{border-top:2px solid #5fd68a;}
+  .tab-btn.active.tab-activecount{border-top:2px solid #c67c14;}
   .tab-btn.active.tab-cards{border-top:2px solid #7fb8e0;}
 
   .card-grid{
@@ -430,6 +431,7 @@
       <button class="tab-btn tab-wow" id="tabWow">WoW 증감률</button>
       <button class="tab-btn tab-byam" id="tabByAM">AM·Tier별 합계</button>
       <button class="tab-btn tab-monthly" id="tabMonthly">월별 합산 (Tier·AM)</button>
+      <button class="tab-btn tab-activecount" id="tabActiveCount">집행 병원수</button>
       <button class="tab-btn tab-total" id="tabTotal">총 합산</button>
     </div>
 
@@ -605,12 +607,14 @@ document.getElementById('tabActual').onclick = ()=>{ state.view='actual'; state.
 document.getElementById('tabWow').onclick = ()=>{ state.view='wow'; state.sortKey='wk0-rev'; state.sortDir='desc'; syncTabs(); render(); };
 document.getElementById('tabByAM').onclick = ()=>{ state.view='byam'; syncTabs(); render(); };
 document.getElementById('tabMonthly').onclick = ()=>{ state.view='monthly'; syncTabs(); render(); };
+document.getElementById('tabActiveCount').onclick = ()=>{ state.view='activecount'; syncTabs(); render(); };
 document.getElementById('tabTotal').onclick = ()=>{ state.view='total'; syncTabs(); render(); };
 function syncTabs(){
   document.getElementById('tabActual').classList.toggle('active', state.view==='actual');
   document.getElementById('tabWow').classList.toggle('active', state.view==='wow');
   document.getElementById('tabByAM').classList.toggle('active', state.view==='byam');
   document.getElementById('tabMonthly').classList.toggle('active', state.view==='monthly');
+  document.getElementById('tabActiveCount').classList.toggle('active', state.view==='activecount');
   document.getElementById('tabTotal').classList.toggle('active', state.view==='total');
 }
 
@@ -1407,6 +1411,89 @@ function renderRowsMonthly(rows){
   tbody.innerHTML = html;
 }
 
+function renderHeadActiveCount(){
+  const thead = document.getElementById('thead');
+  let groupRow = `<tr class="group-row"><th class="nosort left" rowspan="2">AM</th><th class="nosort left" rowspan="2">Tier</th>`;
+  let subRow = `<tr>`;
+  weeks.forEach((w,i)=>{
+    groupRow += `<th colspan="2">${shortDate(w)}</th>`;
+    subRow += `<th class="nosort metric-imp">집행 병원수</th>`;
+    subRow += `<th class="nosort metric-imp">증감</th>`;
+  });
+  groupRow += `</tr>`;
+  subRow += `</tr>`;
+  thead.innerHTML = groupRow + subRow;
+}
+
+function renderRowsActiveCount(rows){
+  const tbody = document.getElementById('tbody');
+  if(rows.length===0){ tbody.innerHTML = emptyRow(); return; }
+
+  function countCell(v, diff){
+    return `<td class="val-cell imp">${fmtNum(v)}</td><td class="wow-cell">${countDeltaSpan(diff)}</td>`;
+  }
+  function rowCells(arr){
+    let cells = '';
+    weeks.forEach((w,i)=>{
+      const diff = (i < weeks.length-1) ? (arr[i] - arr[i+1]) : null;
+      cells += countCell(arr[i], diff);
+    });
+    return cells;
+  }
+
+  // AM+Tier별 집행 병원수 카운트
+  const byGroup = {};
+  const groupOrder = [];
+  rows.forEach(h=>{
+    const key = h.am + '||' + h.tier;
+    if(!byGroup[key]){ byGroup[key] = { am: h.am, tier: h.tier, arr: new Array(weeks.length).fill(0) }; groupOrder.push(key); }
+    weeks.forEach((w,i)=>{
+      const v = h.impressions[i];
+      if(v !== null && v !== undefined && v > 0) byGroup[key].arr[i] += 1;
+    });
+  });
+
+  // AM 전체 합계 (Tier 통합)
+  const byAmTotal = {};
+  const amOrderLocal = [];
+  rows.forEach(h=>{
+    if(!byAmTotal[h.am]){ byAmTotal[h.am] = new Array(weeks.length).fill(0); amOrderLocal.push(h.am); }
+    weeks.forEach((w,i)=>{
+      const v = h.impressions[i];
+      if(v !== null && v !== undefined && v > 0) byAmTotal[h.am][i] += 1;
+    });
+  });
+  amOrderLocal.sort((a,b)=> byAmTotal[b][0]-byAmTotal[a][0]);
+
+  let html = '';
+  amOrderLocal.forEach(am=>{
+    html += `<tr style="background:#eef0f3;">
+      <td class="left" style="font-weight:700;"><span class="am-tag">${am}</span> <span style="color:var(--text-faint); font-weight:400; font-size:11px;">전체</span></td>
+      <td class="left">–</td>
+      ${rowCells(byAmTotal[am])}
+    </tr>`;
+    const tierKeys = groupOrder.filter(k=>byGroup[k].am === am)
+      .sort((a,b)=> String(byGroup[a].tier).localeCompare(String(byGroup[b].tier), 'ko', {numeric:true}));
+    tierKeys.forEach(key=>{
+      const g = byGroup[key];
+      html += `<tr>
+        <td class="left" style="padding-left:24px; color:var(--text-faint);">└</td>
+        <td class="left"><span class="tier-badge">T${g.tier}</span></td>
+        ${rowCells(g.arr)}
+      </tr>`;
+    });
+  });
+
+  tbody.innerHTML = html;
+}
+
+function countDeltaSpan(v){
+  if(v===null||v===undefined) return '<span class="flat">–</span>';
+  const cls = v>0?'up':(v<0?'down':'flat');
+  const arrow = v>0?'▲':(v<0?'▼':'●');
+  return `<span class="${cls}">${arrow} ${v>0?'+':''}${v.toLocaleString('ko-KR')}개</span>`;
+}
+
 document.getElementById('cardBtnAvg').onclick = ()=>{ state.cardMetric='revenue'; syncCardMetricButtons(); renderCards(); };
 document.getElementById('cardBtnImp').onclick = ()=>{ state.cardMetric='impressions'; syncCardMetricButtons(); renderCards(); };
 function syncCardMetricButtons(){
@@ -1613,6 +1700,11 @@ function render(){
     renderRowsMonthly(sorted);
     document.getElementById('footNote').textContent =
       `AM별 전체 합산 + Tier별(T1/T2 등) 월간 CPC 매출 분리 표시 (현재 필터 반영) · 전월대비는 바로 앞 월 기준`;
+  } else if(state.view === 'activecount'){
+    renderHeadActiveCount();
+    renderRowsActiveCount(sorted);
+    document.getElementById('footNote').textContent =
+      `AM별 전체 + Tier별(T1/T2 등) · 주차별 광고 집행 중(집행 수 > 0)인 병원 개수 (현재 필터 반영)`;
   } else {
     renderHeadTotal();
     renderRowsTotal();
