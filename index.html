@@ -1557,7 +1557,8 @@ function renderAmTopMovers(){
   if(amList.length===0){ wrap.innerHTML = ''; return; }
 
   function panelHtml(am, arr, mode){
-    const sorted = arr.slice().sort((a,b)=> mode==='decline' ? a.pct-b.pct : b.pct-a.pct).slice(0,3);
+    const filtered = mode==='decline' ? arr.filter(x=>x.pct < -0.05) : arr.filter(x=>x.pct > 0.05);
+    const sorted = filtered.slice().sort((a,b)=> mode==='decline' ? a.pct-b.pct : b.pct-a.pct).slice(0,3);
     const cls = mode==='decline' ? 'down' : 'up';
     const arrowChar = mode==='decline' ? '▼' : '▲';
     const rowsHtml = sorted.length ? sorted.map((x,i)=>`
