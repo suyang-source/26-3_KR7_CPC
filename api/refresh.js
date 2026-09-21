@@ -7,22 +7,20 @@
 // hospital_id 기준으로 합쳐줍니다. 각 탭은 병원당 딱 한 줄이라
 // (예전처럼 지표별로 여러 줄 쌓이는 구조가 아님) 파싱이 훨씬 단순해요.
 
-const SHEET_ID = '12of_jOnboNT38jzIgD66bJboEfejaXf2CBnHHLvrItE';
+// [FIX 4] 원본 OKR 시트 → 대시보드 전용 공개 시트로 교체
+//
+//   원본 「26-3차 OKR별 목표 및 업무 시트」는 회사 내부 도메인 공유만 걸려 있어
+//   인증 없는 이 코드에서는 401 이 납니다. (2026-08 초부터 장애 원인)
+//   원본을 통째로 링크 공개로 돌리면 파워콜 리스트·포인트 잔액 등 무관한 탭까지
+//   외부에 열리므로, 매출/광고수 두 탭만 IMPORTRANGE 로 끌어온 별도 시트를 만들고
+//   그 시트만 "링크가 있는 모든 사용자 - 뷰어" 로 공개합니다.
+//   원본이 갱신되면 IMPORTRANGE 가 자동으로 따라오므로 주간 수작업은 없습니다.
+const SHEET_ID = '1OUHqP3UksrPwXhnxEttpmU0O10c1gR9MdUJDNdJwPTQ';
 
-// [FIX 1] gviz → export 엔드포인트로 교체
-//
-// 기존: /gviz/tq?tqx=out:csv&sheet=매출
-//   gviz 는 "컬럼 하나 = 타입 하나" 로 스키마를 추론합니다. 매출 탭 H~AF 열은 값이
-//   전부 숫자라 컬럼 타입이 number 로 잡히고, 그 컬럼 '헤더'에 들어있는 날짜 값은
-//   타입 불일치로 버려집니다. 그래서 header[7] 만 살아남고 header[9] 부터는 '' 이 되어,
-//   getWeekColumns() 의 while 루프가 첫 바퀴에서 멈춥니다 → weeks 가 1개.
-//
-// 변경: /export?format=csv&gid=<GID>
-//   시트에 보이는 그대로를 내려주므로 13개 주차 헤더가 모두 옵니다.
-//   export 는 탭 이름을 못 받고 gid 만 받기 때문에 탭 → gid 매핑이 필요합니다.
-//   (gid 는 시트에서 해당 탭을 열었을 때 주소창 #gid= 뒤 숫자)
-const GID_REVENUE = '774298467';      // 매출
-const GID_IMPRESSIONS = '787161311';  // 광고수
+// export 는 탭 이름을 못 받고 gid 만 받습니다.
+// (gid 는 시트에서 해당 탭을 열었을 때 주소창 #gid= 뒤 숫자)
+const GID_REVENUE = '0';               // 매출
+const GID_IMPRESSIONS = '1598035038';  // 광고수
 
 function csvUrl(gid) {
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
@@ -65,6 +63,19 @@ function normId(v) {
   return s;
 }
 
+// [FIX 5] 주차 헤더 라벨 정규화
+//
+//   IMPORTRANGE 로 끌어오면 날짜 셀이 원본 서식을 못 따라와서 헤더가
+//   "2026. 9. 28" 같은 형태로 내려옵니다. 그대로 두면 차트 X축과 표 헤더가
+//   전부 저 긴 문자열로 그려집니다. 시트 서식에 의존하지 않도록 코드에서 "9/28" 로 통일.
+function normWeekLabel(v) {
+  if (v === null || v === undefined) return '';
+  const s = String(v).trim();
+  const m = s.match(/^(\d{4})\s*\.\s*(\d{1,2})\s*\.\s*(\d{1,2})\s*\.?$/);
+  if (m) return `${parseInt(m[2], 10)}/${parseInt(m[3], 10)}`;
+  return s;
+}
+
 function numOrNull(s) {
   if (s === undefined || s === null || s === '' || s === '#DIV/0!' || s === '#REF!') return null;
   const n = parseFloat(String(s).replace(/,/g, ''));
@@ -100,7 +111,7 @@ function getWeekColumns(header) {
 function parseSheetTab(rows, isPct) {
   const header = rows[0];
   const { valueIdx, deltaIdx } = getWeekColumns(header);
-  const weeks = valueIdx.map(i => header[i]);
+  const weeks = valueIdx.map(i => normWeekLabel(header[i]));
 
   const byId = {};
   const order = [];
@@ -155,7 +166,10 @@ module.exports = async function handler(req, res) {
     ]);
 
     if (!revRes.ok || !impRes.ok) {
-      res.status(502).json({ error: `구글시트 요청 실패 (매출 HTTP ${revRes.status}, 광고수 HTTP ${impRes.status})` });
+      res.status(502).json({
+        error: `구글시트 요청 실패 (매출 HTTP ${revRes.status}, 광고수 HTTP ${impRes.status})`,
+        hint: '시트가 "링크가 있는 모든 사용자 - 뷰어"로 공유돼 있는지 확인해주세요. 401이면 거의 항상 이 문제입니다.'
+      });
       return;
     }
 
@@ -172,7 +186,7 @@ module.exports = async function handler(req, res) {
     const revData = parseSheetTab(revRows, true);   // 매출 delta = %
     const impData = parseSheetTab(impRows, false);  // 광고수 delta = 절대값
 
-    const weeks = revData.weeks.length ? revData.weeks : impData.weeks;
+    let weeks = revData.weeks.length ? revData.weeks : impData.weeks;
 
     // [FIX 3] 주차가 1개로 쪼그라드는 회귀를 조용히 넘기지 않도록 가드 강화
     // 기존엔 weeks.length === 0 일 때만 에러였습니다. 이번 장애처럼 1개만 파싱되면
@@ -213,6 +227,36 @@ module.exports = async function handler(req, res) {
         debug: { revRow0: revRows[0] || null, revRow1: revRows[1] || null, impRow0: impRows[0] || null, impRow1: impRows[1] || null }
       });
       return;
+    }
+
+    // [FIX 6] 아직 값이 안 채워진 선두 주차 잘라내기
+    //
+    //   시트에는 다음 주차 컬럼(예: 9/28, 9/21)이 헤더만 미리 만들어져 있고
+    //   값은 비어 있는 경우가 많습니다. 그대로 두면 대시보드가 그 빈 주차를
+    //   "최근주"로 잡아서 KPI 카드가 ₩0 / 0건으로 표시됩니다.
+    //   매출·광고수 양쪽 모두 전 병원이 비어 있는 선두 주차만 제거합니다.
+    //   (중간에 뚫린 주차는 실제 결측이므로 건드리지 않습니다.)
+    let startIdx = 0;
+    while (
+      startIdx < weeks.length - 1 &&
+      hospitals.every(h =>
+        (h.revenue[startIdx] === null || h.revenue[startIdx] === undefined) &&
+        (h.impressions[startIdx] === null || h.impressions[startIdx] === undefined)
+      )
+    ) {
+      startIdx++;
+    }
+
+    if (startIdx > 0) {
+      weeks = weeks.slice(startIdx);
+      hospitals.forEach(h => {
+        h.revenue = h.revenue.slice(startIdx);
+        h.impressions = h.impressions.slice(startIdx);
+        h.revenue_delta_pct = h.revenue_delta_pct.slice(startIdx);
+        h.impressions_delta = h.impressions_delta.slice(startIdx);
+      });
+      if (revData.totalVals) revData.totalVals = revData.totalVals.slice(startIdx);
+      if (impData.totalVals) impData.totalVals = impData.totalVals.slice(startIdx);
     }
 
     // 총합계: 시트에 합계 행이 있으면 그걸 그대로 쓰고, 없으면 병원 전체를 직접 합산
